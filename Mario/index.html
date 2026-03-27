@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Mario</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <header class="hud">
+      <div>
+        <h1>Mini Mario</h1>
+        <p>← A — влево &nbsp;|&nbsp; → D — вправо &nbsp;|&nbsp; Пробел — прыжок &nbsp;|&nbsp; R — перезапуск</p>
+      </div>
+      <div class="status-panel">
+        <span id="status-label">Беги к флагу и избегай врага.</span>
+      </div>
+    </header>
+
+    <section class="canvas-frame">
+      <canvas id="game" width="1280" height="720" aria-label="2D platformer game"></canvas>
+      <div id="start-menu" class="pixel-menu" role="dialog" aria-label="Game menu">
+        <div class="pixel-menu__card">
+          <h2>MINI MARIO</h2>
+          <p>PIXEL ADVENTURE</p>
+          <ul>
+            <li>A / Left: move left</li>
+            <li>D / Right: move right</li>
+            <li>Space: jump</li>
+            <li>Shift (air): dash</li>
+            <li>F: shoot (greenB)</li>
+          </ul>
+          <div class="pixel-menu__buttons">
+            <button id="start-game-btn" type="button">PLAY</button>
+            <button id="skin-btn" type="button">SKIN</button>
+          </div>
+          <div class="records-panel">
+            <h3>RECORDS</h3>
+            <ol id="records-list">
+              <li>No records yet</li>
+            </ol>
+          </div>
+          <small>Press Enter to start</small>
+        </div>
+      </div>
+      <div id="skin-menu" class="pixel-menu" role="dialog" aria-label="Skin selector" hidden>
+        <div class="pixel-menu__card">
+          <h2>SELECT SKIN</h2>
+          <div class="skin-options">
+            <button class="skin-option" data-skin="cuphead">
+              <span class="skin-name">CUPHEAD</span>
+            </button>
+            <button class="skin-option" data-skin="mughead">
+              <span class="skin-name">MUGHEAD</span>
+            </button>
+          </div>
+          <button id="back-btn" type="button" class="back-btn">BACK</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

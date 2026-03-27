@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shake to Clear</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --ink: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Poppins", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(90vw 70vw at 0% 0%, rgba(245, 158, 11, 0.18), transparent 62%),
+        radial-gradient(80vw 60vw at 100% 100%, rgba(59, 130, 246, 0.2), transparent 60%),
+        var(--bg);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .ui {
+      position: fixed;
+      z-index: 5;
+      left: 16px;
+      top: 16px;
+      padding: 12px 14px;
+      background: rgba(17, 24, 39, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      font-size: 14px;
+    }
+
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .piece {
+      position: absolute;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      transition: transform 220ms ease;
+      transform-origin: center;
+    }
+
+    .fall {
+      animation: fall 900ms ease-in forwards;
+    }
+
+    @keyframes fall {
+      0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translateY(120vh) rotate(32deg) scale(0.8); }
+    }
+  </style>
+</head>
+<body>
+  <div class="ui" id="status">Shake mouse left-right quickly to clear</div>
+  <div class="scene" id="scene"></div>
+
+  <script>
+    const scene = document.getElementById("scene");
+    const status = document.getElementById("status");
+
+    const pieces = [];
+    const velocitySamples = [];
+    let lastX = null;
+    let lastTime = performance.now();
+
+    function random(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function createPieces() {
+      for (let i = 0; i < 22; i++) {
+        const el = document.createElement("div");
+        el.className = "piece";
+
+        const w = random(70, 180);
+        const h = random(48, 120);
+        el.style.width = w + "px";
+        el.style.height = h + "px";
+        el.style.left = random(0, window.innerWidth - w) + "px";
+        el.style.top = random(0, window.innerHeight - h) + "px";
+        el.style.background = `linear-gradient(${random(0, 180)}deg, rgba(${Math.floor(random(40, 255))}, ${Math.floor(random(40, 255))}, ${Math.floor(random(40, 255))}, 0.85), rgba(17,24,39,0.9))`;
+
+        scene.appendChild(el);
+        pieces.push(el);
+      }
+    }
+
+    function clearAll() {
+      status.textContent = "Cleared. Refresh page to reset.";
+      for (const piece of pieces) {
+        piece.classList.add("fall");
+      }
+      window.removeEventListener("pointermove", onMove);
+    }
+
+    function onMove(e) {
+      if (lastX === null) {
+        lastX = e.clientX;
+        lastTime = performance.now();
+        return;
+      }
+
+      const now = performance.now();
+      const dt = Math.max(now - lastTime, 8);
+      const dx = e.clientX - lastX;
+      const vx = dx / dt;
+
+      lastX = e.clientX;
+      lastTime = now;
+
+      velocitySamples.push({ t: now, vx });
+      const cutoff = now - 520;
+      while (velocitySamples.length && velocitySamples[0].t < cutoff) {
+        velocitySamples.shift();
+      }
+
+      let reversals = 0;
+      for (let i = 1; i < velocitySamples.length; i++) {
+        const a = velocitySamples[i - 1].vx;
+        const b = velocitySamples[i].vx;
+        if (Math.abs(a) > 0.45 && Math.abs(b) > 0.45 && a * b < 0) {
+          reversals++;
+        }
+      }
+
+      if (reversals >= 6) {
+        clearAll();
+      }
+    }
+
+    createPieces();
+    window.addEventListener("pointermove", onMove);
+  </script>
+</body>
+</html>

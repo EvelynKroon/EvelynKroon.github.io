@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:," />
+  <title>Graafika Lab - 20 JS Graphics Demos</title>
+  <style>
+    :root {
+      --bg: #f6f2e8;
+      --ink: #1c1a16;
+      --panel: #fffaf0;
+      --edge: rgba(28, 26, 22, 0.15);
+      --accent: #0f766e;
+      --accent-2: #c2410c;
+      --active: #fde68a;
+      --shadow: 0 14px 34px rgba(40, 30, 10, 0.16);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      background:
+        radial-gradient(65vw 50vw at 6% 0%, rgba(15, 118, 110, 0.2), transparent 60%),
+        radial-gradient(55vw 48vw at 100% 100%, rgba(194, 65, 12, 0.22), transparent 58%),
+        var(--bg);
+      font-family: "Alegreya Sans", "Segoe UI", sans-serif;
+    }
+
+    .layout {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .sidebar {
+      border-radius: 18px;
+      border: 1px solid var(--edge);
+      background: color-mix(in srgb, var(--panel) 84%, white 16%);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .brand {
+      padding: 18px 16px 14px;
+      border-bottom: 1px dashed var(--edge);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 3vw, 2.3rem);
+      letter-spacing: 0.02em;
+      font-family: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    }
+
+    .brand p {
+      margin: 8px 0 0;
+      font-size: 0.95rem;
+      opacity: 0.82;
+      line-height: 1.45;
+    }
+
+    .tools {
+      display: grid;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px dashed var(--edge);
+    }
+
+    .tools input {
+      width: 100%;
+      border: 1px solid var(--edge);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .tools input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+    }
+
+    .meta {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 12px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+    }
+
+    .item {
+      border: 1px solid var(--edge);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 10px;
+      display: grid;
+      gap: 4px;
+      cursor: pointer;
+      transition: transform 130ms ease, border-color 130ms ease, background 130ms ease;
+      text-align: left;
+      color: inherit;
+      font: inherit;
+    }
+
+    .item:hover {
+      transform: translateY(-1px);
+      border-color: rgba(15, 118, 110, 0.45);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .item.active {
+      background: var(--active);
+      border-color: rgba(28, 26, 22, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .item .id {
+      font-family: "Space Mono", monospace;
+      font-size: 0.78rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .item .name {
+      font-family: "Bricolage Grotesque", "Verdana", sans-serif;
+      font-size: 0.98rem;
+      line-height: 1.25;
+    }
+
+    .viewer {
+      border-radius: 18px;
+      border: 1px solid var(--edge);
+      background: color-mix(in srgb, white 90%, #efe6d2 10%);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .viewer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--edge);
+      background: linear-gradient(110deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.25));
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-family: "Bricolage Grotesque", "Segoe UI", sans-serif;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      border: 1px solid var(--edge);
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      text-decoration: none;
+      font-family: "Space Grotesk", sans-serif;
+      transition: transform 120ms ease, border-color 120ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(15, 118, 110, 0.5);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      .sidebar {
+        max-height: 48vh;
+      }
+
+      .viewer {
+        min-height: 52vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <header class="brand">
+        <h1>Graafika Lab</h1>
+        <p>20 интерактивных мини-приложений по графике и анимации на JavaScript, объединенных в один сайт.</p>
+      </header>
+
+      <section class="tools">
+        <input id="search" type="search" placeholder="Поиск по названию..." />
+        <div class="meta">
+          <span>Демо:</span>
+          <strong id="count">20</strong>
+        </div>
+      </section>
+
+      <ul class="list" id="demoList"></ul>
+    </aside>
+
+    <main class="viewer">
+      <div class="viewer-head">
+        <h2 class="title" id="currentTitle">1. Cursor Trail</h2>
+        <div class="actions">
+          <a class="btn" id="openBtn" href="1-cursor-trail.html" target="_blank" rel="noopener">Открыть отдельно</a>
+        </div>
+      </div>
+      <iframe id="frame" src="1-cursor-trail.html" title="Demo preview"></iframe>
+    </main>
+  </div>
+
+  <script>
+    const demos = [
+      { file: "1-cursor-trail.html", name: "1. Cursor Trail" },
+      { file: "2-magnetic-buttons.html", name: "2. Magnetic Buttons" },
+      { file: "3-dynamic-background-gradient.html", name: "3. Dynamic Background Gradient" },
+      { file: "4-click-to-explode.html", name: "4. Click-to-Explode" },
+      { file: "5-scroll-driven-scaling.html", name: "5. Scroll-Driven Scaling" },
+      { file: "6-toggle-themes-with-sound.html", name: "6. Toggle Themes with Sound" },
+      { file: "7-hover-glitch-effect.html", name: "7. Hover-Glitch Effect" },
+      { file: "8-shake-to-clear.html", name: "8. Shake to Clear" },
+      { file: "9-custom-cursor-shape.html", name: "9. Custom Cursor Shape" },
+      { file: "10-typing-ghost.html", name: "10. Typing Ghost" },
+      { file: "11-sticker-slap.html", name: "11. Sticker Slap" },
+      { file: "12-color-splash.html", name: "12. Color Splash" },
+      { file: "13-dragging-physics.html", name: "13. Dragging Physics" },
+      { file: "14-auto-chaos-rotation.html", name: "14. Auto-Chaos Rotation" },
+      { file: "15-hover-filter-swap.html", name: "15. Hover Filter Swap" },
+      { file: "16-text-shadow-follow.html", name: "16. Text Shadow Follow" },
+      { file: "17-z-index-shuffle.html", name: "17. Z-Index Shuffle" },
+      { file: "18-eraser-mode.html", name: "18. Eraser Mode" },
+      { file: "19-key-sound-piano.html", name: "19. Key-Sound Piano" },
+      { file: "20-screen-edge-warp.html", name: "20. Screen Edge Warp" }
+    ];
+
+    const list = document.getElementById("demoList");
+    const frame = document.getElementById("frame");
+    const currentTitle = document.getElementById("currentTitle");
+    const openBtn = document.getElementById("openBtn");
+    const search = document.getElementById("search");
+    const count = document.getElementById("count");
+
+    let activeFile = demos[0].file;
+
+    function render(items) {
+      list.innerHTML = "";
+      count.textContent = String(items.length);
+
+      for (const demo of items) {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "item" + (demo.file === activeFile ? " active" : "");
+
+        const id = document.createElement("div");
+        id.className = "id";
+        id.textContent = demo.file;
+
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = demo.name;
+
+        btn.appendChild(id);
+        btn.appendChild(name);
+
+        btn.addEventListener("click", () => {
+          activeFile = demo.file;
+          frame.src = demo.file;
+          openBtn.href = demo.file;
+          currentTitle.textContent = demo.name;
+          render(filtered());
+        });
+
+        li.appendChild(btn);
+        list.appendChild(li);
+      }
+    }
+
+    function filtered() {
+      const q = search.value.trim().toLowerCase();
+      if (!q) return demos;
+      return demos.filter((d) => (d.name + " " + d.file).toLowerCase().includes(q));
+    }
+
+    search.addEventListener("input", () => {
+      render(filtered());
+    });
+
+    render(demos);
+  </script>
+</body>
+</html>

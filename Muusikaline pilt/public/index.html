@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo to Music Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- TensorFlow.js runtime and MobileNet model for object recognition in the browser. -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1"></script>
+
+  <!-- Tone.js is used to synthesize music from extracted image features. -->
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.js"></script>
+  <!-- LameJS is used for browser-side WAV -> MP3 conversion. -->
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">Creative Audio Lab</p>
+      <h1>Turn Your Photo Into Music</h1>
+      <p class="subtitle">
+        Upload an image. The app reads color mood and recognized objects, then composes a unique soundscape.
+      </p>
+    </header>
+
+    <section class="panel upload-panel">
+      <label for="imageInput" class="upload-label">Choose a photo</label>
+      <input id="imageInput" type="file" accept="image/*" />
+
+      <div class="preview-wrap">
+        <img id="previewImage" alt="Preview of uploaded photo" />
+      </div>
+
+      <div class="actions">
+        <button id="analyzeButton" type="button" disabled>Analyze & Compose</button>
+        <button id="playButton" type="button" disabled>Play</button>
+        <button id="pauseButton" type="button" disabled>Pause</button>
+        <button id="stopButton" type="button" disabled>Stop</button>
+        <label class="inline-control" for="loopToggle">
+          <input id="loopToggle" type="checkbox" checked />
+          Loop
+        </label>
+      </div>
+    </section>
+
+    <section class="panel settings-panel">
+      <h2>Music Settings Editor</h2>
+      <div class="settings-grid">
+        <label>
+          Tempo: <span id="tempoValue">110</span> BPM
+          <input id="tempoInput" type="range" min="60" max="180" value="110" />
+        </label>
+
+        <label>
+          Genre
+          <select id="genreSelect">
+            <option value="ambient">Ambient</option>
+            <option value="cinematic">Cinematic</option>
+            <option value="electronic">Electronic</option>
+            <option value="lofi">Lo-Fi</option>
+          </select>
+        </label>
+
+        <label>
+          Composition Complexity: <span id="complexityValue">2</span>
+          <input id="complexityInput" type="range" min="1" max="4" value="2" />
+        </label>
+      </div>
+    </section>
+
+    <section class="panel results-panel">
+      <h2>Analysis Results</h2>
+      <p id="statusText" class="status">Load an image to begin.</p>
+
+      <div class="result-grid">
+        <article>
+          <h3>Dominant Colors</h3>
+          <div id="colorPalette" class="palette"></div>
+          <p id="colorSummary"></p>
+        </article>
+
+        <article>
+          <h3>Detected Objects</h3>
+          <ul id="objectList" class="object-list"></ul>
+        </article>
+
+        <article>
+          <h3>Music Mapping</h3>
+          <ul id="mappingList" class="mapping-list"></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel sequencer-panel">
+      <h2>Visual Sequencer (Pixels = Notes)</h2>
+      <p class="status">Read-only sequencer generated from image pixels.</p>
+      <div id="sequencerGrid" class="sequencer-grid" aria-label="Visual MIDI sequencer"></div>
+      <p id="sequencerSummary" class="status">Analyze an image to generate the sequencer grid.</p>
+    </section>
+
+    <section class="panel export-panel">
+      <h2>Export Track</h2>
+      <div class="actions">
+        <button id="exportWavButton" type="button" disabled>Export WAV</button>
+        <button id="exportMp3Button" type="button" disabled>Export MP3</button>
+        <button id="exportMidiButton" type="button" disabled>Export MIDI</button>
+        <button id="saveGalleryButton" type="button" disabled>Save To Gallery</button>
+      </div>
+      <p id="exportStatus" class="status">No track to export yet.</p>
+    </section>
+
+    <section class="panel gallery-panel">
+      <h2>Gallery & Sharing</h2>
+      <p class="status">Tracks are stored in local browser storage.</p>
+      <div id="galleryList" class="gallery-list"></div>
+    </section>
+  </main>
+</body>
+</html>

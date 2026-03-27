@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neural Canvas</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Neural Canvas</p>
+          <h1>Paint music directly on the canvas</h1>
+          <p class="lede">
+            Pitch follows the Y axis, color selects the instrument, and every
+            trail dissolves together with its audio echo.
+          </p>
+        </div>
+        <div class="hero-panel">
+          <button id="audio-toggle" class="primary-button">Enable sound</button>
+          <button id="record-button" class="ghost-button">Record 5s loop</button>
+          <button id="clear-button" class="ghost-button">Shake and clear</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="controls" aria-label="Instrument selection">
+          <h2>Color instruments</h2>
+          <div class="palette" role="radiogroup" aria-label="Instrument palette">
+            <button class="swatch is-active" data-color="red" data-label="Red Bass">
+              <span class="swatch-color red"></span>
+              <span>Red / bass</span>
+            </button>
+            <button class="swatch" data-color="blue" data-label="Blue Piano">
+              <span class="swatch-color blue"></span>
+              <span>Blue / piano</span>
+            </button>
+            <button class="swatch" data-color="yellow" data-label="Yellow Synth">
+              <span class="swatch-color yellow"></span>
+              <span>Yellow / synth</span>
+            </button>
+          </div>
+          <div class="legend">
+            <p><strong>Y → pitch:</strong> higher cursor, higher note.</p>
+            <p><strong>Speed → loudness:</strong> faster motion sounds louder and sharper.</p>
+            <p><strong>Echo trail:</strong> visual trail and delay fade together.</p>
+            <p><strong>Gravity:</strong> enable magnet mode and place orbital sound points with taps.</p>
+            <p><strong>Symmetry:</strong> one gesture is reflected in 4 directions.</p>
+            <p><strong>Oscillogram:</strong> each stroke vibrates like a living waveform.</p>
+            <p><strong>Looper:</strong> a 5-second recording turns into an endless cycle.</p>
+            <p><strong>Atmosphere:</strong> the background breathes with the amount of color on screen.</p>
+          </div>
+          <div class="mode-stack">
+            <button id="symmetry-toggle" class="mode-toggle" type="button">Symmetry x4</button>
+            <button id="magnet-toggle" class="mode-toggle" type="button">Magnet mode</button>
+          </div>
+          <div class="status-panel">
+            <p id="instrument-status">Instrument: Red Bass</p>
+            <p id="pitch-status">Pitch: waiting for touch</p>
+            <p id="speed-status">Gesture: calm</p>
+            <p id="magnet-status">Magnets: 0</p>
+            <p id="loop-status">Looper: idle</p>
+            <p id="atmosphere-status">Atmosphere: barely audible</p>
+            <p id="mode-status">Mode: drawing</p>
+          </div>
+        </section>
+
+        <section class="canvas-card">
+          <canvas id="paint-surface" aria-label="Musical canvas"></canvas>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

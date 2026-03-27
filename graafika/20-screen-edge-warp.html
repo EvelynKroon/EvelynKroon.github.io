@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Screen Edge Warp</title>
+  <style>
+    :root {
+      --bg: #0b1222;
+      --ink: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(80vw 65vw at 12% 15%, rgba(59, 130, 246, 0.24), transparent 60%),
+        radial-gradient(78vw 60vw at 88% 88%, rgba(244, 114, 182, 0.2), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Figtree", "Segoe UI", sans-serif;
+    }
+
+    .hint {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      z-index: 999;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 23, 42, 0.7);
+      font-size: 13px;
+    }
+
+    .orb {
+      position: fixed;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: grab;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: none;
+      color: #08121e;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.34);
+    }
+
+    .orb.dragging { cursor: grabbing; }
+  </style>
+</head>
+<body>
+  <div class="hint">Drag objects beyond screen edge to warp to opposite side</div>
+
+  <script>
+    const data = [
+      [120, 150, "#22d3ee"],
+      [320, 260, "#fb7185"],
+      [520, 170, "#facc15"],
+      [740, 290, "#4ade80"]
+    ];
+
+    function createOrb(i, x, y, color) {
+      const el = document.createElement("div");
+      el.className = "orb";
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.background = color;
+      el.textContent = "W" + (i + 1);
+      document.body.appendChild(el);
+
+      const state = {
+        x,
+        y,
+        dragging: false,
+        ox: 0,
+        oy: 0,
+        size: 86,
+        warpLockX: false,
+        warpLockY: false
+      };
+
+      function edgeWarp(e) {
+        const edge = 2;
+        const releaseZone = 26;
+        const maxX = window.innerWidth - state.size;
+        const maxY = window.innerHeight - state.size;
+
+        const atLeft = e.clientX <= edge;
+        const atRight = e.clientX >= window.innerWidth - edge;
+        const atTop = e.clientY <= edge;
+        const atBottom = e.clientY >= window.innerHeight - edge;
+
+        if (!state.warpLockX) {
+          if (atLeft && e.movementX < 0) {
+            state.x = maxX;
+            state.ox = e.clientX - state.x;
+            state.warpLockX = true;
+          } else if (atRight && e.movementX > 0) {
+            state.x = 0;
+            state.ox = e.clientX - state.x;
+            state.warpLockX = true;
+          }
+        }
+
+        if (!state.warpLockY) {
+          if (atTop && e.movementY < 0) {
+            state.y = maxY;
+            state.oy = e.clientY - state.y;
+            state.warpLockY = true;
+          } else if (atBottom && e.movementY > 0) {
+            state.y = 0;
+            state.oy = e.clientY - state.y;
+            state.warpLockY = true;
+          }
+        }
+
+        if (state.warpLockX && e.clientX > releaseZone && e.clientX < window.innerWidth - releaseZone) {
+          state.warpLockX = false;
+        }
+
+        if (state.warpLockY && e.clientY > releaseZone && e.clientY < window.innerHeight - releaseZone) {
+          state.warpLockY = false;
+        }
+      }
+
+      function draw() {
+        el.style.left = state.x + "px";
+        el.style.top = state.y + "px";
+      }
+
+      function clampInsideViewport() {
+        const maxX = Math.max(0, window.innerWidth - state.size);
+        const maxY = Math.max(0, window.innerHeight - state.size);
+        state.x = Math.max(0, Math.min(maxX, state.x));
+        state.y = Math.max(0, Math.min(maxY, state.y));
+        draw();
+      }
+
+      el.addEventListener("pointerdown", (e) => {
+        state.dragging = true;
+        state.ox = e.clientX - state.x;
+        state.oy = e.clientY - state.y;
+        state.warpLockX = false;
+        state.warpLockY = false;
+        el.classList.add("dragging");
+        el.setPointerCapture(e.pointerId);
+      });
+
+      el.addEventListener("pointermove", (e) => {
+        if (!state.dragging) return;
+        state.x = e.clientX - state.ox;
+        state.y = e.clientY - state.oy;
+        edgeWarp(e);
+        draw();
+      });
+
+      function stop() {
+        state.dragging = false;
+        el.classList.remove("dragging");
+      }
+
+      el.addEventListener("pointerup", stop);
+      el.addEventListener("pointercancel", stop);
+      window.addEventListener("resize", clampInsideViewport);
+      clampInsideViewport();
+      draw();
+    }
+
+    data.forEach((row, i) => createOrb(i, row[0], row[1], row[2]));
+  </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursor Trail</title>
+  <style>
+    :root {
+      --bg-1: #04131b;
+      --bg-2: #0a2b33;
+      --accent-1: #ffb347;
+      --accent-2: #7dd3fc;
+      --accent-3: #34d399;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 20% 20%, #0f3540 0%, var(--bg-1) 55%, #01060a 100%);
+      color: #e2eef5;
+      cursor: crosshair;
+    }
+
+    .hud {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 2;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      background: rgba(2, 12, 18, 0.55);
+      backdrop-filter: blur(8px);
+      letter-spacing: 0.04em;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud">Move cursor to draw sparks</div>
+  <canvas id="stage"></canvas>
+
+  <script>
+    const canvas = document.getElementById("stage");
+    const ctx = canvas.getContext("2d");
+
+    const colors = ["#ffb347", "#7dd3fc", "#34d399", "#ffd166"];
+    const particles = [];
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function spawn(x, y) {
+      const amount = 5;
+      for (let i = 0; i < amount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.6 + Math.random() * 2.2;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 4 + Math.random() * 9,
+          life: 36 + Math.random() * 28,
+          maxLife: 64,
+          color: colors[(Math.random() * colors.length) | 0],
+          shape: (Math.random() * 3) | 0,
+          spin: (Math.random() - 0.5) * 0.18,
+          rotation: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    function drawShape(p) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(p.life / p.maxLife, 0);
+
+      if (p.shape === 0) {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.shape === 1) {
+        const s = p.size * 0.7;
+        ctx.fillRect(-s * 0.5, -s * 0.5, s, s);
+      } else {
+        const s = p.size;
+        ctx.beginPath();
+        ctx.moveTo(0, -s * 0.55);
+        ctx.lineTo(s * 0.5, s * 0.45);
+        ctx.lineTo(-s * 0.5, s * 0.45);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function tick() {
+      ctx.fillStyle = "rgba(1, 6, 10, 0.18)";
+      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        p.vy += 0.01;
+        p.rotation += p.spin;
+        p.life -= 1;
+
+        drawShape(p);
+
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", (e) => spawn(e.clientX, e.clientY));
+    window.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+      if (touch) spawn(touch.clientX, touch.clientY);
+    }, { passive: true });
+
+    resize();
+    tick();
+  </script>
+</body>
+</html>

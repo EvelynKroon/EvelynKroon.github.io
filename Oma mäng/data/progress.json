@@ -1,0 +1,44 @@
+{
+  "players": {
+    "Moxxi": {
+      "currentLevel": 5,
+      "unlockedLevel": 5,
+      "score": 0,
+      "coins": 0,
+      "stats": {
+        "health": 100,
+        "fuel": 100,
+        "nitro": 0
+      },
+      "upgrades": {
+        "acceleration": 1,
+        "brakes": 1,
+        "handling": 1
+      },
+      "settings": {
+        "graphics": "high"
+      },
+      "savedAt": "2026-03-24T13:17:11.899Z"
+    },
+    "TestUser": {
+      "coins": 0,
+      "upgrades": {
+        "handling": 1,
+        "brakes": 1,
+        "acceleration": 1
+      },
+      "settings": {
+        "graphics": "high"
+      },
+      "score": 10,
+      "currentLevel": 1,
+      "stats": {
+        "fuel": 100,
+        "health": 100,
+        "nitro": 0
+      },
+      "unlockedLevel": 1,
+      "savedAt": "2026-03-24T11:40:14.852Z"
+    }
+  }
+}

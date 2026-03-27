@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Shadow Follow</title>
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --ink: #1e293b;
+      --dx: 0px;
+      --dy: 0px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Merriweather", Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(70vw 55vw at 0% 0%, rgba(251, 146, 60, 0.2), transparent 55%),
+        radial-gradient(70vw 55vw at 100% 100%, rgba(14, 165, 233, 0.2), transparent 58%),
+        var(--bg);
+      padding: 20px;
+    }
+
+    .wrap {
+      width: min(940px, 95vw);
+      display: grid;
+      gap: 12px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      text-shadow:
+        calc(var(--dx) * -1) calc(var(--dy) * -1) 0 rgba(0, 0, 0, 0.22),
+        calc(var(--dx) * -2) calc(var(--dy) * -2) 10px rgba(0, 0, 0, 0.18);
+      transition: text-shadow 70ms linear;
+    }
+
+    h1 { font-size: clamp(2rem, 7vw, 4.4rem); }
+    h2 { font-size: clamp(1.4rem, 4vw, 2.4rem); }
+    h3 { font-size: clamp(1.2rem, 3.2vw, 1.8rem); }
+
+    p {
+      margin: 10px 0 0;
+      font-family: "Inter", "Segoe UI", sans-serif;
+      line-height: 1.65;
+      max-width: 70ch;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Text Shadow Follow</h1>
+    <h2>Where mouse is, there is the sun</h2>
+    <h3>All heading shadows move opposite to cursor direction</h3>
+    <p>Move cursor around the screen. Heading shadows are always cast to the opposite side, creating dynamic pseudo-lighting for typography.</p>
+  </main>
+
+  <script>
+    function update(e) {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const dx = (e.clientX - cx) / cx;
+      const dy = (e.clientY - cy) / cy;
+
+      document.documentElement.style.setProperty("--dx", (dx * 6).toFixed(2) + "px");
+      document.documentElement.style.setProperty("--dy", (dy * 6).toFixed(2) + "px");
+    }
+
+    window.addEventListener("mousemove", update);
+  </script>
+</body>
+</html>

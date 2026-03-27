@@ -1,0 +1,22 @@
+{
+  "name": "photo-music-generator",
+  "version": "1.0.0",
+  "description": "Web app that transforms photo colors and detected objects into unique music",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "music",
+    "photo",
+    "ai",
+    "nodejs",
+    "javascript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

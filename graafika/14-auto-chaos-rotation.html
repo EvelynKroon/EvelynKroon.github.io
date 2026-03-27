@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto Chaos Rotation</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --ink: #0f172a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(80vw 60vw at 10% 0%, rgba(56, 189, 248, 0.2), transparent 60%),
+        radial-gradient(80vw 60vw at 95% 100%, rgba(251, 146, 60, 0.2), transparent 62%),
+        var(--bg);
+      color: var(--ink);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .stage {
+      width: min(980px, 95vw);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      padding: 10px;
+    }
+
+    .tile {
+      min-height: 120px;
+      border-radius: 18px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      background: rgba(255, 255, 255, 0.76);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      transform-origin: center;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      user-select: none;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" id="stage"></main>
+
+  <script>
+    const stage = document.getElementById("stage");
+    const labels = [
+      "FLOAT", "BREATHE", "DRIFT", "PULSE", "SWAY", "ORBIT",
+      "WAVE", "GLIDE", "SPIN", "FLOW", "CHAOS", "CALM"
+    ];
+
+    const items = labels.map((label, i) => {
+      const el = document.createElement("div");
+      el.className = "tile";
+      el.textContent = label;
+      el.style.background = `hsla(${i * 28}, 85%, 92%, 0.85)`;
+      stage.appendChild(el);
+
+      return {
+        el,
+        base: Math.random() * 360,
+        speed: (Math.random() * 0.6 + 0.18) * (Math.random() > 0.5 ? 1 : -1),
+        amp: 4 + Math.random() * 14
+      };
+    });
+
+    function frame(t) {
+      const time = t * 0.001;
+      for (const item of items) {
+        const rot = item.base + Math.sin(time * item.speed) * item.amp;
+        const y = Math.sin(time * (item.speed * 1.7)) * 4;
+        item.el.style.transform = `translateY(${y}px) rotate(${rot}deg)`;
+      }
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

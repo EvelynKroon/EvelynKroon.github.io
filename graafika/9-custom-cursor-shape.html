@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Cursor Shape</title>
+  <style>
+    :root {
+      --bg: #0a0f1a;
+      --ink: #e6edf6;
+      --accent: #22d3ee;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      cursor: none;
+      font-family: "Exo 2", "Segoe UI", sans-serif;
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(70vw 70vw at 10% 90%, rgba(34, 211, 238, 0.16), transparent 55%),
+        radial-gradient(75vw 75vw at 90% 10%, rgba(251, 113, 133, 0.14), transparent 58%),
+        var(--bg);
+      overflow: hidden;
+    }
+
+    .text {
+      width: min(720px, 92vw);
+      text-align: center;
+      font-size: clamp(1.2rem, 3.5vw, 2rem);
+      line-height: 1.45;
+      opacity: 0.95;
+      letter-spacing: 0.03em;
+    }
+
+    .cursor {
+      position: fixed;
+      width: 36px;
+      height: 36px;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      z-index: 99;
+      transform: translate(-50%, -50%);
+    }
+
+    .cursor::before,
+    .cursor::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50% 18% 50% 18%;
+      border: 2px solid var(--accent);
+    }
+
+    .cursor::before {
+      transform: rotate(20deg);
+      box-shadow: 0 0 22px rgba(34, 211, 238, 0.45);
+    }
+
+    .cursor::after {
+      transform: rotate(-25deg) scale(0.7);
+      border-color: rgba(251, 113, 133, 0.9);
+    }
+
+    .dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <div class="text">Default cursor is replaced with a custom rotating graphical object. Move your mouse fast to increase spin speed.</div>
+  <div class="cursor" id="cursor"><span class="dot"></span></div>
+
+  <script>
+    const cursor = document.getElementById("cursor");
+
+    let x = innerWidth / 2;
+    let y = innerHeight / 2;
+    let tx = x;
+    let ty = y;
+    let angle = 0;
+    let speed = 0;
+
+    window.addEventListener("mousemove", (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+
+      const dx = tx - x;
+      const dy = ty - y;
+      speed = Math.min(20, Math.hypot(dx, dy));
+    });
+
+    function animate() {
+      x += (tx - x) * 0.28;
+      y += (ty - y) * 0.28;
+      angle += 1.2 + speed * 0.85;
+      speed *= 0.9;
+
+      cursor.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) rotate(${angle}deg)`;
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

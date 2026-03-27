@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Star Wars Databank Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">External API Demo</p>
+        <h1>Star Wars Data Cards</h1>
+        <p class="subtitle">
+          Browse multiple categories fetched live from the Star Wars Databank API.
+        </p>
+        <div class="theme-switch" role="group" aria-label="Theme switcher">
+          <button class="theme-btn active" data-theme="dark">🌑 Dark Side</button>
+          <button class="theme-btn" data-theme="light">🌕 Light Side (Yoda Vibes)</button>
+        </div>
+      </header>
+
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-category="characters">🧑 Characters</button>
+        <button class="filter-btn" data-category="locations">🪐 Planets</button>
+        <button class="filter-btn" data-category="vehicles">🚀 Ships</button>
+        <button class="filter-btn" data-category="favorites">⭐ Favorites</button>
+        <button class="filter-btn" data-category="history">🕘 History</button>
+      </div>
+
+      <div class="search-container">
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-input" 
+          placeholder="Search by name..." 
+          aria-label="Search items"
+        />
+        <select id="sort-select" class="sort-select" aria-label="Sort cards">
+          <option value="default">Sort: Default</option>
+          <option value="name">Sort: By name (A-Z)</option>
+          <option value="alphabet">Sort: Alphabet (Z-A)</option>
+          <option value="metric">Sort: By stat</option>
+        </select>
+        <button id="lucky-btn" class="lucky-btn" type="button">🎲 I'm Feeling Lucky</button>
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <section id="app" class="categories" aria-live="polite"></section>
+    </main>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" aria-label="Close modal">✕</button>
+        <div class="modal-header">
+          <img id="modal-image" class="modal-image" alt="" />
+        </div>
+        <div class="modal-body">
+          <h2 id="modal-title" class="modal-title"></h2>
+          <div id="modal-details" class="modal-details"></div>
+        </div>
+      </div>
+    </div>
+
+    <template id="card-template">
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-face card-front">
+            <div class="image-wrap">
+              <img class="card-image" alt="" loading="lazy" />
+            </div>
+            <div class="card-content">
+              <h3 class="card-title"></h3>
+              <div class="card-stats-container"></div>
+            </div>
+          </div>
+          <div class="card-face card-back">
+            <h3 class="card-back-title"></h3>
+            <p class="card-back-description"></p>
+            <div class="card-back-actions"></div>
+            <span class="card-back-hint">Click to open details</span>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

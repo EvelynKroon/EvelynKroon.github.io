@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Key-Sound Piano</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --ink: #f3f4f6;
+      --accent: #34d399;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(70vw 60vw at 15% 12%, rgba(52, 211, 153, 0.2), transparent 60%),
+        radial-gradient(65vw 60vw at 85% 85%, rgba(59, 130, 246, 0.22), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "JetBrains Mono", Consolas, monospace;
+      padding: 20px;
+    }
+
+    .panel {
+      width: min(820px, 94vw);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(17, 24, 39, 0.72);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+    }
+
+    h1 { margin: 0 0 8px; }
+    p { margin: 0 0 14px; opacity: 0.85; }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.25);
+      color: var(--ink);
+      font: inherit;
+      padding: 12px;
+      outline: none;
+    }
+
+    .meter {
+      margin-top: 10px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .meter > span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #22d3ee, #f59e0b);
+      transition: width 80ms linear;
+    }
+  </style>
+</head>
+<body>
+  <main class="panel">
+    <h1>Key-Sound Piano</h1>
+    <p>Each key press triggers a random short synth blip while you type.</p>
+    <textarea id="typing" placeholder="Type anything..."></textarea>
+    <div class="meter"><span id="level"></span></div>
+  </main>
+
+  <script>
+    let ctx = null;
+    const level = document.getElementById("level");
+    const input = document.getElementById("typing");
+
+    function audio() {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      return ctx;
+    }
+
+    function blip() {
+      const ac = audio();
+      const now = ac.currentTime;
+
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      const filter = ac.createBiquadFilter();
+
+      const types = ["triangle", "square", "sine", "sawtooth"];
+      const base = 240 + Math.random() * 980;
+      const dur = 0.05 + Math.random() * 0.08;
+      const amt = 0.05 + Math.random() * 0.18;
+
+      osc.type = types[(Math.random() * types.length) | 0];
+      osc.frequency.setValueAtTime(base, now);
+      osc.frequency.exponentialRampToValueAtTime(base * (0.6 + Math.random() * 0.6), now + dur);
+
+      filter.type = "lowpass";
+      filter.frequency.value = 800 + Math.random() * 2400;
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(amt, now + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ac.destination);
+
+      osc.start(now);
+      osc.stop(now + dur + 0.01);
+
+      level.style.width = Math.min(100, amt * 380) + "%";
+      setTimeout(() => { level.style.width = "0%"; }, 90);
+    }
+
+    input.addEventListener("keydown", async () => {
+      try {
+        const ac = audio();
+        if (ac.state === "suspended") await ac.resume();
+        blip();
+      } catch (_) {
+        // Ignore if audio is blocked.
+      }
+    });
+  </script>
+</body>
+</html>

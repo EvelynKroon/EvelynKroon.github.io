@@ -1,0 +1,35 @@
+{
+  "description": "Placeholders for AI or artist-generated assets. Replace with PNG/SVG/GLB models.",
+  "items": [
+    {
+      "id": "player-car",
+      "type": "svg",
+      "file": "car.svg",
+      "recommended3D": "models/player-car.glb"
+    },
+    {
+      "id": "enemy-drone",
+      "type": "svg",
+      "file": "enemy-drone.svg",
+      "recommended3D": "models/enemy-drone.glb"
+    },
+    {
+      "id": "obstacle-barrier",
+      "type": "svg",
+      "file": "barrier.svg",
+      "recommended3D": "models/barrier.glb"
+    },
+    {
+      "id": "helper-robot",
+      "type": "svg",
+      "file": "helper-robot.svg",
+      "recommended3D": "models/helper-robot.glb"
+    },
+    {
+      "id": "bonus-pack",
+      "type": "svg",
+      "file": "bonus.svg",
+      "recommended3D": "models/bonus.glb"
+    }
+  ]
+}

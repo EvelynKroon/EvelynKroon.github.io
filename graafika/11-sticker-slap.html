@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sticker Slap</title>
+  <style>
+    :root {
+      --bg: #f5f3ff;
+      --ink: #1f1b2d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(80vw 65vw at 12% 12%, rgba(244, 114, 182, 0.22), transparent 52%),
+        radial-gradient(70vw 65vw at 85% 90%, rgba(59, 130, 246, 0.2), transparent 57%),
+        var(--bg);
+      font-family: "Bricolage Grotesque", "Segoe UI", sans-serif;
+      overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .hint {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--ink);
+    }
+
+    .sticker {
+      position: fixed;
+      width: 104px;
+      height: 104px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      color: #0b0b0f;
+      border: 2px solid rgba(0, 0, 0, 0.22);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+      transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(0.2);
+      animation: slap 380ms cubic-bezier(.14,.87,.25,1.29) forwards;
+    }
+
+    @keyframes slap {
+      0% { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(0.2); }
+      65% { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1.14); }
+      100% { transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="hint">Click anywhere to slap a random sticker</div>
+
+  <script>
+    const labels = ["WOW", "BAM", "POP", "NICE", "COOL", "YES"];
+    const colors = [
+      [251, 191, 36],
+      [74, 222, 128],
+      [56, 189, 248],
+      [244, 114, 182],
+      [253, 186, 116],
+      [167, 139, 250]
+    ];
+
+    function choose(arr) {
+      return arr[(Math.random() * arr.length) | 0];
+    }
+
+    window.addEventListener("pointerdown", (e) => {
+      const sticker = document.createElement("div");
+      sticker.className = "sticker";
+      sticker.textContent = choose(labels);
+
+      const [r, g, b] = choose(colors);
+      sticker.style.background = `rgb(${r}, ${g}, ${b})`;
+      sticker.style.left = e.clientX + "px";
+      sticker.style.top = e.clientY + "px";
+      sticker.style.setProperty("--rot", `${(Math.random() * 60 - 30).toFixed(1)}deg`);
+
+      document.body.appendChild(sticker);
+
+      const limit = 80;
+      const all = document.querySelectorAll(".sticker");
+      if (all.length > limit) {
+        all[0].remove();
+      }
+    });
+  </script>
+</body>
+</html>

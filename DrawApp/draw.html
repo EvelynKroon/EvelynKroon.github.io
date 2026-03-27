@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw App with Layers</title>
+    <style>
+        :root {
+            --bg: #ececec;
+            --panel: #f3f3f3;
+            --border: #b5b5b5;
+            --text: #1f1f1f;
+            --active: #d5e8ff;
+            --btn: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(180deg, #f7f7f7 0%, #e8e8e8 100%);
+            color: var(--text);
+        }
+
+        .app {
+            display: flex;
+            gap: 18px;
+            padding: 16px;
+            align-items: flex-start;
+        }
+
+        .main-panel {
+            background: var(--panel);
+            border: 1px solid #d8d8d8;
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        #displayCanvas {
+            display: block;
+            width: 800px;
+            height: 600px;
+            border: 1px solid #000;
+            background: #fff;
+            cursor: crosshair;
+        }
+
+        .toolbar {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 34px;
+            height: 34px;
+            border: 2px solid #222;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .color-btn.black { background: #000000; }
+        .color-btn.red { background: #ff0000; }
+        .color-btn.blue { background: #0000ff; }
+        .color-btn.green { background: #00aa00; }
+
+        .color-btn.active {
+            outline: 3px solid #7ab6ff;
+            outline-offset: 1px;
+        }
+
+        .brush-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #efefef;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #d0d0d0;
+        }
+
+        input[type="range"] {
+            width: 130px;
+        }
+
+        .tool-btn {
+            border: 1px solid #8a8a8a;
+            background: var(--btn);
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .tool-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .tool-btn.active-tool {
+            background: #ffd9d9;
+            border-color: #cc6a6a;
+        }
+
+        .gallery-panel {
+            margin-top: 14px;
+            border-top: 1px solid #d2d2d2;
+            padding-top: 10px;
+        }
+
+        .gallery-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .gallery-title {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+        }
+
+        .gallery-item {
+            border: 1px solid #bfbfbf;
+            border-radius: 6px;
+            background: #fff;
+            padding: 6px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid #d0d0d0;
+            display: block;
+        }
+
+        .gallery-item button {
+            margin-top: 6px;
+            width: 100%;
+            border: 1px solid #8a8a8a;
+            background: #f7f7f7;
+            border-radius: 4px;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            width: 330px;
+            background: var(--panel);
+            border: 1px solid #d8d8d8;
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .panel-title {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+
+        .picker-main {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .sv-canvas {
+            width: 200px;
+            height: 200px;
+            cursor: crosshair;
+        }
+
+        .hue-canvas {
+            width: 24px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .preview-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .quick-colors {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .add-color-btn {
+            width: 34px;
+            height: 34px;
+            border: 2px solid #5f5f5f;
+            border-radius: 4px;
+            background: #ffffff;
+            color: #222;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .preview-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            border: 2px solid #6f6f6f;
+        }
+
+        .picker-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .value-input {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .value-input label {
+            width: 18px;
+            font-weight: 600;
+        }
+
+        .value-input input,
+        .hex-row input {
+            width: 62px;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #b9b9b9;
+        }
+
+        .hex-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .hex-row input {
+            width: 100%;
+            font-family: Consolas, monospace;
+        }
+
+        .layers-panel {
+            border-top: 1px solid #cfcfcf;
+            padding-top: 12px;
+        }
+
+        .layers-head {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .layer-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .layer-actions button {
+            flex: 1;
+            border: 1px solid #8a8a8a;
+            background: #fff;
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .layer-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .layer-item {
+            border: 1px solid #b6b6b6;
+            background: #fff;
+            border-radius: 6px;
+            padding: 7px 10px;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .layer-item.active {
+            background: var(--active);
+            border-color: #77aaff;
+        }
+
+        .layer-item.dragging {
+            opacity: 0.45;
+        }
+
+        @media (max-width: 1220px) {
+            .app {
+                flex-direction: column;
+            }
+
+            #displayCanvas {
+                width: 100%;
+                height: auto;
+            }
+
+            .main-panel,
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <section class="main-panel">
+            <canvas id="displayCanvas" width="800" height="600"></canvas>
+
+            <div class="toolbar">
+                <div class="brush-box">
+                    <label for="brushSize">Brush:</label>
+                    <input type="range" id="brushSize" min="1" max="40" value="6">
+                    <span id="brushSizeValue">6</span>
+                </div>
+
+                <button class="tool-btn" id="eraserBtn">Eraser</button>
+                <button class="tool-btn" id="fillBtn">Fill</button>
+                <button class="tool-btn" id="clearCanvas">Reset Canvas</button>
+                <button class="tool-btn" id="saveToGallery">Save to Gallery</button>
+            </div>
+
+            <section class="gallery-panel">
+                <div class="gallery-header">
+                    <h3 class="gallery-title">Gallery</h3>
+                    <button class="tool-btn" id="clearGalleryBtn">Clear Gallery</button>
+                </div>
+                <div id="galleryGrid" class="gallery-grid"></div>
+            </section>
+        </section>
+
+        <aside class="sidebar">
+            <h2 class="panel-title">RGB color picker</h2>
+
+            <div class="picker-main">
+                <canvas id="svCanvas" class="sv-canvas" width="200" height="200"></canvas>
+                <canvas id="hueCanvas" class="hue-canvas" width="24" height="200"></canvas>
+            </div>
+
+            <div class="preview-row">
+                <div id="previewCurrent" class="preview-box" title="Current color"></div>
+                <div id="previewLastUsed" class="preview-box" title="Last used in drawing"></div>
+            </div>
+
+            <div class="quick-colors" id="quickColors">
+                <button class="color-btn black" data-color="#000000" title="Black"></button>
+                <button class="color-btn red" data-color="#FF0000" title="Red"></button>
+                <button class="color-btn blue" data-color="#0000FF" title="Blue"></button>
+                <button class="color-btn green" data-color="#00AA00" title="Green"></button>
+                <button class="add-color-btn" id="addPaletteColorBtn" title="Save current color to quick palette">+</button>
+            </div>
+
+            <div class="picker-grid">
+                <div class="value-input"><label for="rInput">R</label><input id="rInput" type="number" min="0" max="255" value="255"></div>
+                <div class="value-input"><label for="hInput">H</label><input id="hInput" type="number" min="0" max="360" value="0"></div>
+                <div class="value-input"><label for="gInput">G</label><input id="gInput" type="number" min="0" max="255" value="0"></div>
+                <div class="value-input"><label for="sInput">S</label><input id="sInput" type="number" min="0" max="100" value="100"></div>
+                <div class="value-input"><label for="bInput">B</label><input id="bInput" type="number" min="0" max="255" value="0"></div>
+                <div class="value-input"><label for="vInput">V</label><input id="vInput" type="number" min="0" max="100" value="100"></div>
+            </div>
+
+            <div class="hex-row">
+                <label for="hexInput">#</label>
+                <input id="hexInput" type="text" maxlength="6" value="FF0000">
+            </div>
+
+            <section class="layers-panel">
+                <h3 class="layers-head">Layers</h3>
+                <div class="layer-actions">
+                    <button id="addLayerBtn">Add</button>
+                    <button id="duplicateLayerBtn">Duplicate</button>
+                    <button id="deleteLayerBtn">Delete</button>
+                </div>
+                <ul id="layerList" class="layer-list"></ul>
+            </section>
+        </aside>
+    </div>
+
+    <script>
+        const displayCanvas = document.getElementById("displayCanvas");
+        const displayCtx = displayCanvas.getContext("2d");
+
+        const brushSizeInput = document.getElementById("brushSize");
+        const brushSizeValue = document.getElementById("brushSizeValue");
+        const eraserBtn = document.getElementById("eraserBtn");
+        const fillBtn = document.getElementById("fillBtn");
+        const clearCanvasBtn = document.getElementById("clearCanvas");
+        const saveToGalleryBtn = document.getElementById("saveToGallery");
+        const clearGalleryBtn = document.getElementById("clearGalleryBtn");
+        const galleryGrid = document.getElementById("galleryGrid");
+
+        const quickColors = document.getElementById("quickColors");
+        const addPaletteColorBtn = document.getElementById("addPaletteColorBtn");
+        const svCanvas = document.getElementById("svCanvas");
+        const hueCanvas = document.getElementById("hueCanvas");
+        const svCtx = svCanvas.getContext("2d");
+        const hueCtx = hueCanvas.getContext("2d");
+
+        const rInput = document.getElementById("rInput");
+        const gInput = document.getElementById("gInput");
+        const bInput = document.getElementById("bInput");
+        const hInput = document.getElementById("hInput");
+        const sInput = document.getElementById("sInput");
+        const vInput = document.getElementById("vInput");
+        const hexInput = document.getElementById("hexInput");
+        const previewCurrent = document.getElementById("previewCurrent");
+        const previewLastUsed = document.getElementById("previewLastUsed");
+
+        const layerList = document.getElementById("layerList");
+        const addLayerBtn = document.getElementById("addLayerBtn");
+        const duplicateLayerBtn = document.getElementById("duplicateLayerBtn");
+        const deleteLayerBtn = document.getElementById("deleteLayerBtn");
+
+        let brushSize = Number(brushSizeInput.value);
+        let currentColor = "#FF0000";
+        let lastUsedColor = currentColor;
+        let isDrawing = false;
+        let currentTool = "brush";
+
+        let h = 0;
+        let s = 1;
+        let v = 1;
+
+        let layers = [];
+        let activeLayerId = null;
+        let layerCounter = 1;
+        let dragSourceId = null;
+        const customPaletteStorageKey = "drawapp.customPalette";
+
+        function createLayer(name, cloneCanvas) {
+            const canvas = document.createElement("canvas");
+            canvas.width = displayCanvas.width;
+            canvas.height = displayCanvas.height;
+            const ctx = canvas.getContext("2d");
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+
+            if (cloneCanvas) {
+                ctx.drawImage(cloneCanvas, 0, 0);
+            }
+
+            return {
+                id: crypto.randomUUID(),
+                name,
+                canvas,
+                ctx
+            };
+        }
+
+        function addLayer(makeActive = true) {
+            const layer = createLayer("Layer " + layerCounter++);
+            layers.push(layer);
+            if (makeActive) activeLayerId = layer.id;
+            renderLayerList();
+            compositeLayers();
+        }
+
+        function getActiveLayer() {
+            return layers.find((l) => l.id === activeLayerId) || null;
+        }
+
+        function duplicateActiveLayer() {
+            const active = getActiveLayer();
+            if (!active) return;
+
+            const copy = createLayer(active.name + " copy", active.canvas);
+            const idx = layers.findIndex((l) => l.id === active.id);
+            layers.splice(idx + 1, 0, copy);
+            activeLayerId = copy.id;
+            renderLayerList();
+            compositeLayers();
+        }
+
+        function deleteActiveLayer() {
+            if (layers.length <= 1) {
+                alert("At least one layer is required.");
+                return;
+            }
+
+            const idx = layers.findIndex((l) => l.id === activeLayerId);
+            if (idx === -1) return;
+
+            layers.splice(idx, 1);
+            const fallback = Math.max(0, idx - 1);
+            activeLayerId = layers[fallback].id;
+            renderLayerList();
+            compositeLayers();
+        }
+
+        function clearActiveLayer() {
+            // Full reset: remove all layer content and recreate a fresh single layer.
+            layers = [];
+            activeLayerId = null;
+            layerCounter = 1;
+            displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+            addLayer(true);
+        }
+
+        // Draw all layers into the visible canvas in order.
+        function compositeLayers() {
+            displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+            for (const layer of layers) {
+                displayCtx.drawImage(layer.canvas, 0, 0);
+            }
+        }
+
+        function renderLayerList() {
+            layerList.innerHTML = "";
+
+            for (let i = layers.length - 1; i >= 0; i--) {
+                const layer = layers[i];
+                const item = document.createElement("li");
+                item.className = "layer-item" + (layer.id === activeLayerId ? " active" : "");
+                item.textContent = layer.name;
+                item.draggable = true;
+                item.dataset.layerId = layer.id;
+
+                item.addEventListener("click", () => {
+                    activeLayerId = layer.id;
+                    renderLayerList();
+                });
+
+                item.addEventListener("dragstart", () => {
+                    dragSourceId = layer.id;
+                    item.classList.add("dragging");
+                });
+
+                item.addEventListener("dragend", () => {
+                    dragSourceId = null;
+                    item.classList.remove("dragging");
+                });
+
+                item.addEventListener("dragover", (event) => {
+                    event.preventDefault();
+                });
+
+                item.addEventListener("drop", (event) => {
+                    event.preventDefault();
+                    reorderLayersByDrop(dragSourceId, layer.id);
+                });
+
+                layerList.appendChild(item);
+            }
+        }
+
+        function reorderLayersByDrop(sourceId, targetId) {
+            if (!sourceId || !targetId || sourceId === targetId) return;
+
+            const sourceIndex = layers.findIndex((l) => l.id === sourceId);
+            const targetIndex = layers.findIndex((l) => l.id === targetId);
+            if (sourceIndex === -1 || targetIndex === -1) return;
+
+            const [moved] = layers.splice(sourceIndex, 1);
+            layers.splice(targetIndex, 0, moved);
+            renderLayerList();
+            compositeLayers();
+        }
+
+        function getCanvasPosition(event) {
+            const rect = displayCanvas.getBoundingClientRect();
+            return {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top
+            };
+        }
+
+        function setToolMode(toolName) {
+            currentTool = toolName;
+            eraserBtn.classList.toggle("active-tool", currentTool === "eraser");
+            fillBtn.classList.toggle("active-tool", currentTool === "fill");
+        }
+
+        function startDrawing(event) {
+            const active = getActiveLayer();
+            if (!active) return;
+
+            isDrawing = true;
+            const pos = getCanvasPosition(event);
+            active.ctx.beginPath();
+            active.ctx.moveTo(pos.x, pos.y);
+            active.ctx.lineWidth = brushSize;
+            active.ctx.globalCompositeOperation = currentTool === "eraser" ? "destination-out" : "source-over";
+            active.ctx.strokeStyle = currentColor;
+
+            lastUsedColor = currentColor;
+            previewLastUsed.style.backgroundColor = lastUsedColor;
+        }
+
+        function draw(event) {
+            if (!isDrawing) return;
+            const active = getActiveLayer();
+            if (!active) return;
+
+            const pos = getCanvasPosition(event);
+            active.ctx.lineTo(pos.x, pos.y);
+            active.ctx.stroke();
+            compositeLayers();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            const active = getActiveLayer();
+            if (active) {
+                active.ctx.globalCompositeOperation = "source-over";
+            }
+        }
+
+        // Flood fill on active layer using color similarity tolerance.
+        function fillActiveLayerAt(x, y) {
+            const active = getActiveLayer();
+            if (!active) return;
+
+            const width = active.canvas.width;
+            const height = active.canvas.height;
+            const px = clampNumber(Math.floor(x), 0, width - 1);
+            const py = clampNumber(Math.floor(y), 0, height - 1);
+            const imageData = active.ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            const startOffset = (py * width + px) * 4;
+
+            const targetR = data[startOffset];
+            const targetG = data[startOffset + 1];
+            const targetB = data[startOffset + 2];
+            const targetA = data[startOffset + 3];
+
+            const fillRgb = hexToRgb(currentColor);
+            if (!fillRgb) return;
+
+            const fillR = fillRgb.r;
+            const fillG = fillRgb.g;
+            const fillB = fillRgb.b;
+            const fillA = 255;
+
+            if (targetR === fillR && targetG === fillG && targetB === fillB && targetA === fillA) {
+                return;
+            }
+
+            const tolerance = 20;
+            const stack = [py * width + px];
+
+            function isTargetColor(offset) {
+                return (
+                    Math.abs(data[offset] - targetR) <= tolerance &&
+                    Math.abs(data[offset + 1] - targetG) <= tolerance &&
+                    Math.abs(data[offset + 2] - targetB) <= tolerance &&
+                    Math.abs(data[offset + 3] - targetA) <= tolerance
+                );
+            }
+
+            while (stack.length > 0) {
+                const index = stack.pop();
+                const offset = index * 4;
+
+                if (!isTargetColor(offset)) {
+                    continue;
+                }
+
+                data[offset] = fillR;
+                data[offset + 1] = fillG;
+                data[offset + 2] = fillB;
+                data[offset + 3] = fillA;
+
+                const cx = index % width;
+                const cy = Math.floor(index / width);
+
+                if (cx > 0) stack.push(index - 1);
+                if (cx < width - 1) stack.push(index + 1);
+                if (cy > 0) stack.push(index - width);
+                if (cy < height - 1) stack.push(index + width);
+            }
+
+            active.ctx.putImageData(imageData, 0, 0);
+            lastUsedColor = currentColor;
+            previewLastUsed.style.backgroundColor = lastUsedColor;
+            compositeLayers();
+        }
+
+        function handleCanvasMouseDown(event) {
+            if (currentTool === "fill") {
+                const pos = getCanvasPosition(event);
+                fillActiveLayerAt(pos.x, pos.y);
+                return;
+            }
+
+            startDrawing(event);
+        }
+
+        function drawHueSpectrum() {
+            for (let y = 0; y < hueCanvas.height; y++) {
+                const hue = (y / hueCanvas.height) * 360;
+                const rgb = hsvToRgb(hue / 360, 1, 1);
+                hueCtx.fillStyle = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
+                hueCtx.fillRect(0, y, hueCanvas.width, 1);
+            }
+        }
+
+        function drawSVSquare() {
+            for (let x = 0; x < svCanvas.width; x++) {
+                for (let y = 0; y < svCanvas.height; y++) {
+                    const sat = x / svCanvas.width;
+                    const val = 1 - y / svCanvas.height;
+                    const rgb = hsvToRgb(h / 360, sat, val);
+                    svCtx.fillStyle = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
+                    svCtx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+
+        function hsvToRgb(hh, ss, vv) {
+            let r;
+            let g;
+            let b;
+
+            const i = Math.floor(hh * 6);
+            const f = hh * 6 - i;
+            const p = vv * (1 - ss);
+            const q = vv * (1 - f * ss);
+            const t = vv * (1 - (1 - f) * ss);
+
+            switch (i % 6) {
+                case 0: r = vv; g = t; b = p; break;
+                case 1: r = q; g = vv; b = p; break;
+                case 2: r = p; g = vv; b = t; break;
+                case 3: r = p; g = q; b = vv; break;
+                case 4: r = t; g = p; b = vv; break;
+                default: r = vv; g = p; b = q; break;
+            }
+
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+
+        function rgbToHsv(r, g, b) {
+            const rn = r / 255;
+            const gn = g / 255;
+            const bn = b / 255;
+            const max = Math.max(rn, gn, bn);
+            const min = Math.min(rn, gn, bn);
+            const d = max - min;
+
+            let hh = 0;
+            const ss = max === 0 ? 0 : d / max;
+            const vv = max;
+
+            if (d !== 0) {
+                if (max === rn) hh = (gn - bn) / d + (gn < bn ? 6 : 0);
+                else if (max === gn) hh = (bn - rn) / d + 2;
+                else hh = (rn - gn) / d + 4;
+                hh /= 6;
+            }
+
+            return { h: hh * 360, s: ss * 100, v: vv * 100 };
+        }
+
+        function rgbToHex(r, g, b) {
+            return ((1 << 24) + (r << 16) + (g << 8) + b)
+                .toString(16)
+                .slice(1)
+                .toUpperCase();
+        }
+
+        function hexToRgb(hex) {
+            const clean = hex.replace("#", "");
+            if (!/^[0-9A-Fa-f]{6}$/.test(clean)) return null;
+            return {
+                r: parseInt(clean.slice(0, 2), 16),
+                g: parseInt(clean.slice(2, 4), 16),
+                b: parseInt(clean.slice(4, 6), 16)
+            };
+        }
+
+        function clampNumber(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function applyColor(r, g, b) {
+            const cr = clampNumber(r, 0, 255);
+            const cg = clampNumber(g, 0, 255);
+            const cb = clampNumber(b, 0, 255);
+
+            const hsv = rgbToHsv(cr, cg, cb);
+            h = hsv.h;
+            s = hsv.s / 100;
+            v = hsv.v / 100;
+
+            drawSVSquare();
+
+            rInput.value = cr;
+            gInput.value = cg;
+            bInput.value = cb;
+            hInput.value = Math.round(hsv.h);
+            sInput.value = Math.round(hsv.s);
+            vInput.value = Math.round(hsv.v);
+            hexInput.value = rgbToHex(cr, cg, cb);
+
+            currentColor = "#" + rgbToHex(cr, cg, cb);
+            previewCurrent.style.backgroundColor = currentColor;
+            syncColorButtonSelection();
+        }
+
+        function applyHexColor(hex) {
+            const rgb = hexToRgb(hex);
+            if (!rgb) return;
+            applyColor(rgb.r, rgb.g, rgb.b);
+        }
+
+        function syncColorButtonSelection() {
+            const buttons = quickColors.querySelectorAll(".color-btn");
+            for (const btn of buttons) {
+                btn.classList.toggle("active", btn.dataset.color.toUpperCase() === currentColor.toUpperCase());
+            }
+        }
+
+        function normalizeHexColor(color) {
+            return color.startsWith("#") ? color.toUpperCase() : ("#" + color.toUpperCase());
+        }
+
+        function saveCustomPalette() {
+            const customButtons = quickColors.querySelectorAll(".color-btn.custom");
+            const colors = Array.from(customButtons).map((btn) => normalizeHexColor(btn.dataset.color));
+            localStorage.setItem(customPaletteStorageKey, JSON.stringify(colors));
+        }
+
+        function appendCustomColorButton(color, shouldPersist = true) {
+            const normalized = normalizeHexColor(color);
+            const exists = quickColors.querySelector(`.color-btn[data-color="${normalized}"]`);
+            if (exists) return;
+
+            const button = document.createElement("button");
+            button.className = "color-btn custom";
+            button.dataset.color = normalized;
+            button.title = normalized;
+            button.style.backgroundColor = normalized;
+
+            quickColors.insertBefore(button, addPaletteColorBtn);
+
+            if (shouldPersist) {
+                saveCustomPalette();
+            }
+        }
+
+        function restoreCustomPalette() {
+            const raw = localStorage.getItem(customPaletteStorageKey);
+            if (!raw) return;
+
+            try {
+                const colors = JSON.parse(raw);
+                if (!Array.isArray(colors)) return;
+                for (const color of colors) {
+                    if (typeof color === "string") {
+                        appendCustomColorButton(color, false);
+                    }
+                }
+            } catch {
+                localStorage.removeItem(customPaletteStorageKey);
+            }
+        }
+
+        // Save current composited image into gallery on this page.
+        function saveToGallery() {
+            compositeLayers();
+            const imageData = displayCanvas.toDataURL("image/png");
+            const item = document.createElement("div");
+            item.className = "gallery-item";
+
+            const img = document.createElement("img");
+            img.src = imageData;
+            img.alt = "Saved drawing";
+
+            const removeBtn = document.createElement("button");
+            removeBtn.textContent = "Delete";
+            removeBtn.addEventListener("click", () => {
+                item.remove();
+            });
+
+            item.appendChild(img);
+            item.appendChild(removeBtn);
+            galleryGrid.prepend(item);
+        }
+
+        function clearGallery() {
+            galleryGrid.innerHTML = "";
+        }
+
+        svCanvas.addEventListener("mousedown", (event) => {
+            const rect = svCanvas.getBoundingClientRect();
+            const x = clampNumber(event.clientX - rect.left, 0, svCanvas.width);
+            const y = clampNumber(event.clientY - rect.top, 0, svCanvas.height);
+            s = x / svCanvas.width;
+            v = 1 - y / svCanvas.height;
+            const rgb = hsvToRgb(h / 360, s, v);
+            applyColor(rgb.r, rgb.g, rgb.b);
+        });
+
+        svCanvas.addEventListener("mousemove", (event) => {
+            if (event.buttons !== 1) return;
+            const rect = svCanvas.getBoundingClientRect();
+            const x = clampNumber(event.clientX - rect.left, 0, svCanvas.width);
+            const y = clampNumber(event.clientY - rect.top, 0, svCanvas.height);
+            s = x / svCanvas.width;
+            v = 1 - y / svCanvas.height;
+            const rgb = hsvToRgb(h / 360, s, v);
+            applyColor(rgb.r, rgb.g, rgb.b);
+        });
+
+        hueCanvas.addEventListener("mousedown", (event) => {
+            const rect = hueCanvas.getBoundingClientRect();
+            const y = clampNumber(event.clientY - rect.top, 0, hueCanvas.height);
+            h = (y / hueCanvas.height) * 360;
+            drawSVSquare();
+            const rgb = hsvToRgb(h / 360, s, v);
+            applyColor(rgb.r, rgb.g, rgb.b);
+        });
+
+        hueCanvas.addEventListener("mousemove", (event) => {
+            if (event.buttons !== 1) return;
+            const rect = hueCanvas.getBoundingClientRect();
+            const y = clampNumber(event.clientY - rect.top, 0, hueCanvas.height);
+            h = (y / hueCanvas.height) * 360;
+            drawSVSquare();
+            const rgb = hsvToRgb(h / 360, s, v);
+            applyColor(rgb.r, rgb.g, rgb.b);
+        });
+
+        quickColors.addEventListener("click", (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLButtonElement)) return;
+            if (!target.dataset.color) return;
+            applyHexColor(target.dataset.color);
+            setToolMode("brush");
+        });
+
+        addPaletteColorBtn.addEventListener("click", () => {
+            appendCustomColorButton(currentColor);
+            syncColorButtonSelection();
+        });
+
+        eraserBtn.addEventListener("click", () => {
+            setToolMode(currentTool === "eraser" ? "brush" : "eraser");
+        });
+
+        fillBtn.addEventListener("click", () => {
+            setToolMode(currentTool === "fill" ? "brush" : "fill");
+        });
+
+        brushSizeInput.addEventListener("input", () => {
+            brushSize = Number(brushSizeInput.value);
+            brushSizeValue.textContent = String(brushSize);
+        });
+
+        clearCanvasBtn.addEventListener("click", clearActiveLayer);
+        saveToGalleryBtn.addEventListener("click", saveToGallery);
+        clearGalleryBtn.addEventListener("click", clearGallery);
+        addLayerBtn.addEventListener("click", () => addLayer(true));
+        duplicateLayerBtn.addEventListener("click", duplicateActiveLayer);
+        deleteLayerBtn.addEventListener("click", deleteActiveLayer);
+
+        rInput.addEventListener("input", () => applyColor(Number(rInput.value), Number(gInput.value), Number(bInput.value)));
+        gInput.addEventListener("input", () => applyColor(Number(rInput.value), Number(gInput.value), Number(bInput.value)));
+        bInput.addEventListener("input", () => applyColor(Number(rInput.value), Number(gInput.value), Number(bInput.value)));
+
+        hInput.addEventListener("input", () => {
+            h = clampNumber(Number(hInput.value), 0, 360);
+            drawSVSquare();
+            const rgb = hsvToRgb(h / 360, s, v);
+            applyColor(rgb.r, rgb.g, rgb.b);
+        });
+
+        sInput.addEventListener("input", () => {
+            s = clampNumber(Number(sInput.value), 0, 100) / 100;
+            drawSVSquare();
+            const rgb = hsvToRgb(h / 360, s, v);
+            applyColor(rgb.r, rgb.g, rgb.b);
+        });
+
+        vInput.addEventListener("input", () => {
+            v = clampNumber(Number(vInput.value), 0, 100) / 100;
+            drawSVSquare();
+            const rgb = hsvToRgb(h / 360, s, v);
+            applyColor(rgb.r, rgb.g, rgb.b);
+        });
+
+        hexInput.addEventListener("input", () => {
+            if (hexInput.value.length === 6) applyHexColor(hexInput.value);
+        });
+
+        displayCanvas.addEventListener("mousedown", handleCanvasMouseDown);
+        displayCanvas.addEventListener("mousemove", draw);
+        displayCanvas.addEventListener("mouseup", stopDrawing);
+        displayCanvas.addEventListener("mouseleave", stopDrawing);
+
+        // Initial setup.
+        addLayer(true);
+        restoreCustomPalette();
+        drawHueSpectrum();
+        applyColor(255, 0, 0);
+        setToolMode("brush");
+        previewLastUsed.style.backgroundColor = lastUsedColor;
+        compositeLayers();
+    </script>
+</body>
+</html>

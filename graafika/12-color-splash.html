@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Splash</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --ink: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(70vw 70vw at 20% 20%, rgba(34, 211, 238, 0.16), transparent 60%),
+        radial-gradient(65vw 65vw at 85% 85%, rgba(251, 146, 60, 0.14), transparent 55%),
+        var(--bg);
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--ink);
+    }
+
+    .hint {
+      position: fixed;
+      left: 14px;
+      top: 14px;
+      z-index: 6;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 23, 42, 0.62);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .splash {
+      position: fixed;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      filter: blur(2px);
+      mix-blend-mode: screen;
+    }
+
+    .fade {
+      animation: fade 420ms ease forwards;
+    }
+
+    @keyframes fade {
+      from { opacity: 0.9; }
+      to { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hint">Hold mouse button to grow color splash</div>
+
+  <script>
+    let active = null;
+    let radius = 24;
+    let growTimer = 0;
+    const palette = [
+      [56, 189, 248],
+      [74, 222, 128],
+      [251, 146, 60],
+      [244, 114, 182],
+      [250, 204, 21]
+    ];
+
+    function pickColor() {
+      return palette[(Math.random() * palette.length) | 0];
+    }
+
+    function makeSplash(x, y) {
+      const el = document.createElement("div");
+      el.className = "splash";
+      const [r, g, b] = pickColor();
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.background = `radial-gradient(circle, rgba(${r}, ${g}, ${b}, 0.8) 0%, rgba(${r}, ${g}, ${b}, 0.35) 45%, rgba(${r}, ${g}, ${b}, 0.08) 70%, transparent 100%)`;
+      document.body.appendChild(el);
+      return el;
+    }
+
+    function setSize(el, value) {
+      const size = Math.max(8, value * 2);
+      el.style.width = size + "px";
+      el.style.height = size + "px";
+      el.style.opacity = Math.max(0.2, 1 - value / 420);
+    }
+
+    function onDown(e) {
+      if (active) onUp();
+      radius = 24;
+      active = makeSplash(e.clientX, e.clientY);
+      setSize(active, radius);
+
+      growTimer = window.setInterval(() => {
+        if (!active) return;
+        radius = Math.min(340, radius + 6.5);
+        setSize(active, radius);
+      }, 16);
+    }
+
+    function onMove(e) {
+      if (!active) return;
+      active.style.left = e.clientX + "px";
+      active.style.top = e.clientY + "px";
+    }
+
+    function onUp() {
+      if (!active) return;
+      clearInterval(growTimer);
+      active.classList.add("fade");
+      const dead = active;
+      active = null;
+      setTimeout(() => dead.remove(), 430);
+    }
+
+    window.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    window.addEventListener("blur", onUp);
+  </script>
+</body>
+</html>

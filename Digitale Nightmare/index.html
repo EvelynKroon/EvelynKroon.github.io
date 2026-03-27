@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Nightmare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background-grid" aria-hidden="true"></div>
+
+  <main class="app">
+    <header class="panel hero">
+      <h1>Digital Nightmare</h1>
+      <p>Загрузи фото или включи камеру и преврати реальность в кибер-кашу.</p>
+    </header>
+
+    <section class="panel controls">
+      <div class="control-row">
+        <button id="startCameraBtn" class="btn">Включить камеру</button>
+        <button id="stopCameraBtn" class="btn ghost">Отключить камеру</button>
+        <button id="startMicBtn" class="btn">Включить микрофон</button>
+        <button id="stopMicBtn" class="btn ghost">Отключить микрофон</button>
+        <button id="freezeCaptureBtn" class="btn ghost">Заморозить область</button>
+        <button id="freezeClearBtn" class="btn ghost">Сброс freeze</button>
+        <button id="chaosSaveBtn" class="btn">Chaos Save</button>
+        <label class="file-wrap btn ghost" for="uploadInput">Загрузить фото</label>
+        <input id="uploadInput" type="file" accept="image/*" />
+      </div>
+
+      <div class="control-grid">
+        <label class="switch">
+          <input id="rgbEnabled" type="checkbox" checked />
+          <span>RGB Split</span>
+        </label>
+        <label>
+          <span>Сила RGB</span>
+          <input id="rgbPower" type="range" min="1" max="60" value="16" />
+        </label>
+
+        <label class="switch">
+          <input id="moshEnabled" type="checkbox" checked />
+          <span>Datamoshing Lite</span>
+        </label>
+        <label>
+          <span>Сила Mosh</span>
+          <input id="moshPower" type="range" min="0" max="1" step="0.01" value="0.38" />
+        </label>
+
+        <label class="switch">
+          <input id="sortEnabled" type="checkbox" checked />
+          <span>Pixel Sorting</span>
+        </label>
+        <label>
+          <span>Размер области</span>
+          <input id="sortArea" type="range" min="40" max="280" step="10" value="120" />
+        </label>
+
+        <label class="switch">
+          <input id="audioReactiveEnabled" type="checkbox" checked />
+          <span>Audio-Reactive Distortion</span>
+        </label>
+        <label>
+          <span>Чувствительность микрофона</span>
+          <input id="audioSensitivity" type="range" min="0.5" max="3" step="0.05" value="1.35" />
+        </label>
+
+        <label class="switch">
+          <input id="scanlineEnabled" type="checkbox" checked />
+          <span>Scanline Overlay</span>
+        </label>
+        <label>
+          <span>Интенсивность scanline</span>
+          <input id="scanlinePower" type="range" min="0" max="1" step="0.01" value="0.32" />
+        </label>
+
+        <label class="switch">
+          <input id="noiseEnabled" type="checkbox" checked />
+          <span>VHS Noise</span>
+        </label>
+        <label>
+          <span>Интенсивность шума</span>
+          <input id="noisePower" type="range" min="0" max="1" step="0.01" value="0.22" />
+        </label>
+
+        <label>
+          <span>Mirror Dimension</span>
+          <select id="mirrorSectors">
+            <option value="0">Отключено</option>
+            <option value="4">4 сектора</option>
+            <option value="8">8 секторов</option>
+          </select>
+        </label>
+        <label class="switch">
+          <input id="freezeEnabled" type="checkbox" checked />
+          <span>Frame Freeze</span>
+        </label>
+
+        <label>
+          <span>Размер freeze-области</span>
+          <input id="freezeSize" type="range" min="40" max="260" step="10" value="120" />
+        </label>
+        <label class="switch">
+          <input id="asciiEnabled" type="checkbox" />
+          <span>ASCII-mode</span>
+        </label>
+
+        <label>
+          <span>Шаг ASCII-сетки</span>
+          <input id="asciiCell" type="range" min="6" max="18" step="1" value="9" />
+        </label>
+      </div>
+
+      <p class="hint">Наведи мышь для усиления сдвигов, кликай для glitch-рывка, кричи в микрофон для audio-хаоса, а для Frame Freeze нажми "Заморозить область" и кликни по нужному месту кадра.</p>
+    </section>
+
+    <section class="panel stage-wrap">
+      <canvas id="stage" aria-label="Область визуального эффекта"></canvas>
+    </section>
+  </main>
+
+  <video id="cameraFeed" autoplay muted playsinline webkit-playsinline></video>
+  <img id="uploadedImage" alt="Загруженное изображение" />
+
+  <script src="app.js"></script>
+</body>
+</html>

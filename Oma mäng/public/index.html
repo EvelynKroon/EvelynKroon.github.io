@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cyber Drive Adventure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="menuOverlay" class="overlay visible">
+      <div class="panel">
+        <h1>Cyber Drive Adventure</h1>
+        <p class="subtitle">Arcade racing through 5 futuristic levels</p>
+
+        <div class="field">
+          <label for="playerName">Player Name</label>
+          <input id="playerName" type="text" maxlength="24" placeholder="Enter your name" />
+        </div>
+
+        <div class="field">
+          <label>Choose a starting level:</label>
+          <div class="level-selector">
+            <button class="level-btn active" data-level="1">1 City</button>
+            <button class="level-btn" data-level="2">2 Industrial</button>
+            <button class="level-btn" data-level="3">3 Highway</button>
+            <button class="level-btn" data-level="4">4 Mountains</button>
+            <button class="level-btn" data-level="5">5 Megacity</button>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button id="startBtn">New Game</button>
+          <button id="continueBtn">Continue</button>
+          <button id="resumeBtn" class="hidden">Resume Run (Esc)</button>
+        </div>
+
+        <div class="settings">
+          <h2>Settings</h2>
+          <label>
+            Car Color:
+            <select id="carColorSelect">
+              <option value="cyan">Cyan</option>
+              <option value="red">Red</option>
+              <option value="blue">Blue</option>
+              <option value="green">Green</option>
+              <option value="orange">Orange</option>
+              <option value="white">White</option>
+            </select>
+          </label>
+          <button id="musicToggleBtn" type="button" class="music-toggle">Music: On</button>
+          <label>
+            Graphics:
+            <select id="graphicsSelect">
+              <option value="high">High</option>
+              <option value="low">Low</option>
+            </select>
+          </label>
+          <p>Controls: WASD / Arrows, Space for Nitro</p>
+        </div>
+
+        <p id="menuStatus" class="status"></p>
+      </div>
+    </div>
+
+    <div id="hud" class="hud hidden">
+      <div class="hud-row">
+        <span>Player: <strong id="hudPlayer">-</strong></span>
+        <span>Level: <strong id="hudLevel">1</strong>/5</span>
+        <span>Score: <strong id="hudScore">0</strong></span>
+      </div>
+      <div class="hud-row">
+        <span>Fuel: <strong id="hudFuel">100</strong></span>
+        <span>Durability: <strong id="hudHealth">100</strong></span>
+        <span>Nitro: <strong id="hudNitro">0</strong></span>
+      </div>
+      <div class="hud-row">
+        <span>Upgrades:</span>
+        <span>ACC <strong id="hudAcc">1</strong></span>
+        <span>BRK <strong id="hudBrk">1</strong></span>
+        <span>HDL <strong id="hudHdl">1</strong></span>
+      </div>
+      <div id="eventFeed" class="event-feed"></div>
+    </div>
+
+    <div id="gameOverOverlay" class="overlay hidden">
+      <div class="gameover-card">
+        <div class="gameover-image-wrapper">
+          <img id="gameOverImage" src="gameover.png" alt="Game Over" class="gameover-img" />
+        </div>
+        <div class="gameover-content">
+          <h2 id="gameOverTitle" class="gameover-title">You should have watched the road</h2>
+          <p id="gameOverText" class="gameover-reason"></p>
+          <div class="gameover-buttons">
+            <button id="retryBtn" class="btn-primary">Retry</button>
+            <button id="menuBtn" class="btn-primary">Menu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="happyEndOverlay" class="overlay hidden">
+      <div class="happyend-card">
+        <div class="happyend-image-wrapper">
+          <img id="happyEndImage" src="happy_end.png" alt="Happy End" class="happyend-img" />
+        </div>
+        <div class="happyend-content">
+          <h2 class="happyend-title">Victory!</h2>
+          <p id="happyEndText" class="happyend-text"></p>
+          <div class="happyend-buttons">
+            <button id="happyEndMenuBtn" class="btn-winner">Back to Main Menu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script type="module" src="game.js"></script>
+  </body>
+</html>

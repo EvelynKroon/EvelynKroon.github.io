@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&display=swap');
+
+:root {
+  --bg1: #fff2f8;
+  --bg2: #ffd9ea;
+  --bg3: #ffe7f2;
+  --ink: #66314f;
+  --ink-soft: #8f5674;
+  --panel: rgba(255, 250, 254, 0.8);
+  --panel-stroke: rgba(215, 138, 177, 0.24);
+  --accent: #ff78ad;
+  --accent-strong: #ff4f94;
+  --accent-2: #ff9ec4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 15%, rgba(255, 255, 255, 0.95) 0%, transparent 32%),
+    radial-gradient(circle at 82% 18%, rgba(255, 205, 231, 0.65) 0%, transparent 30%),
+    radial-gradient(circle at 74% 84%, rgba(255, 235, 246, 0.8) 0%, transparent 34%),
+    linear-gradient(145deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 999px;
+  z-index: -1;
+  filter: blur(1px);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+body::before {
+  width: 360px;
+  height: 360px;
+  top: -110px;
+  left: -70px;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #ffc4df 60%, rgba(255, 196, 223, 0));
+  animation: floatCloud 12s ease-in-out infinite;
+}
+
+body::after {
+  width: 300px;
+  height: 300px;
+  bottom: -80px;
+  right: -50px;
+  background: radial-gradient(circle at 50% 50%, #fff9fd, #ffb6d8 65%, rgba(255, 182, 216, 0));
+  animation: floatCloud 9s ease-in-out infinite reverse;
+}
+
+.app-shell {
+  width: min(980px, 92vw);
+  margin: 2.2rem auto;
+  display: grid;
+  gap: 1.25rem;
+  animation: fadeInUp 460ms ease both;
+}
+
+.hero,
+.controls,
+.camera-zone,
+.legend {
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 24px;
+  padding: 1.05rem 1.3rem;
+  box-shadow:
+    0 16px 38px rgba(255, 121, 173, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.hero h1 {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  margin: 0 0 0.3rem;
+  font-size: clamp(1.75rem, 4.6vw, 2.6rem);
+  letter-spacing: 0.01em;
+  color: var(--accent-strong);
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.7);
+}
+
+.hero p,
+.status,
+.movement,
+.legend li {
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.action-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.82rem 1.4rem;
+  font-weight: 700;
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: 1.05rem;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(255, 79, 148, 0.28);
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 13px 24px rgba(255, 79, 148, 0.33);
+  filter: saturate(1.08);
+}
+
+.action-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.camera-zone {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+#camera,
+#overlay {
+  width: 100%;
+  border-radius: 16px;
+  display: block;
+}
+
+#camera {
+  transform: scaleX(-1);
+  max-height: 62vh;
+  object-fit: cover;
+  border: 2px solid rgba(255, 160, 200, 0.38);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+#overlay {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  width: calc(100% - 2rem);
+  height: calc(100% - 2rem);
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+.legend h2 {
+  margin-top: 0;
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  color: var(--accent-2);
+}
+
+.legend ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.legend li::marker {
+  color: var(--accent-strong);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatCloud {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+
+  50% {
+    transform: translateY(-9px) translateX(7px);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    margin: 1rem auto;
+  }
+
+  .hero,
+  .controls,
+  .camera-zone,
+  .legend {
+    padding: 0.85rem 0.95rem;
+    border-radius: 18px;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}

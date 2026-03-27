@@ -1,0 +1,12 @@
+{
+  "name": "turvamees-motion-alert",
+  "version": "1.0.0",
+  "description": "Camera-based motion direction web app with sound alerts",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

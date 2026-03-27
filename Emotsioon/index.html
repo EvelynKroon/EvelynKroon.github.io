@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emotion Lens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-emotion="neutral">
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <div class="emotion-fx" aria-hidden="true">
+    <div class="fx-confetti">
+      <span class="piece p1"></span>
+      <span class="piece p2"></span>
+      <span class="piece p3"></span>
+      <span class="piece p4"></span>
+      <span class="piece p5"></span>
+      <span class="piece p6"></span>
+      <span class="piece p7"></span>
+      <span class="piece p8"></span>
+    </div>
+
+    <div class="fx-clouds">
+      <span class="cloud c1"></span>
+      <span class="cloud c2"></span>
+      <span class="cloud c3"></span>
+      <span class="cloud c4"></span>
+    </div>
+
+    <div class="fx-storm">
+      <span class="storm-cloud s1"></span>
+      <span class="storm-cloud s2"></span>
+      <span class="storm-cloud s3"></span>
+      <span class="lightning l1"></span>
+      <span class="lightning l2"></span>
+    </div>
+  </div>
+
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">Emotion Lens</p>
+      <h1>Real-Time Emotion Detection</h1>
+      <p class="subtext">
+        Allow camera access. The app will detect facial expressions and adapt the entire interface mood to your current emotion.
+      </p>
+    </header>
+
+    <section class="camera-panel">
+      <div class="video-container">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="overlay" width="640" height="480" aria-hidden="true"></canvas>
+        <img id="emotionIcon" class="emotion-icon" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Emotion indicator" />
+      </div>
+
+      <div class="status-grid">
+        <article class="status-card">
+          <p class="status-label">Current Emotion</p>
+          <p id="emotionLabel" class="status-value">Waiting...</p>
+        </article>
+        <article class="status-card">
+          <p class="status-label">Confidence</p>
+          <p id="confidenceLabel" class="status-value">0%</p>
+        </article>
+        <article class="status-card status-card-wide">
+          <p class="status-label">Camera Status</p>
+          <p id="cameraState" class="status-value">Initializing...</p>
+        </article>
+      </div>
+
+      <button id="startBtn" class="action-btn" type="button">Start Camera</button>
+    </section>
+  </main>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>

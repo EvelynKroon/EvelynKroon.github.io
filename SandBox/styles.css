@@ -1,0 +1,155 @@
+:root {
+  --bg-top: #f2f7ea;
+  --bg-bottom: #d9e8f7;
+  --panel: rgba(255, 255, 255, 0.86);
+  --panel-border: rgba(16, 38, 54, 0.18);
+  --ink: #13242f;
+  --muted: #3f5562;
+  --accent: #1d7a6e;
+  --accent-2: #d08a2e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: "Manrope", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at 10% 15%, #fef6d8 0%, transparent 30%),
+    radial-gradient(circle at 85% 80%, #d4f1e8 0%, transparent 35%),
+    linear-gradient(145deg, var(--bg-top), var(--bg-bottom));
+}
+
+.app {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  padding: 18px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 30px rgba(10, 25, 35, 0.12);
+}
+
+h1 {
+  margin: 0 0 8px;
+  font: 700 1.45rem/1.15 "Space Grotesk", sans-serif;
+}
+
+p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+label {
+  display: block;
+  margin: 10px 0 6px;
+  font-weight: 600;
+}
+
+select,
+input,
+button {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(14, 34, 45, 0.25);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+select,
+input {
+  padding: 10px;
+}
+
+button {
+  margin-top: 14px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border: none;
+}
+
+#organizeBtn {
+  margin-top: 10px;
+  background: linear-gradient(90deg, #3a7ad1, #5a51ba);
+}
+
+#freezeBtn {
+  margin-top: 10px;
+  background: linear-gradient(90deg, #8a3aa7, #de5a6f);
+}
+
+#organizeText {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.inlineControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.inlineControl input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.stats {
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.stageWrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(12, 36, 50, 0.22);
+  box-shadow: 0 12px 40px rgba(10, 30, 40, 0.18);
+  min-height: 70vh;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: linear-gradient(180deg, #0c1923 0%, #132a38 42%, #1f2e26 100%);
+}
+
+.hint {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #17313f;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .stageWrap {
+    min-height: 62vh;
+  }
+}

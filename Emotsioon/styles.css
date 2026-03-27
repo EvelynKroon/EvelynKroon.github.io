@@ -1,0 +1,515 @@
+:root {
+  /* Default visual theme (used for neutral state until emotion updates). */
+  --bg-a: #d7eadf;
+  --bg-b: #cbe4dc;
+  --bg-c: #bdddd7;
+  --text-main: #2f3a49;
+  --panel: rgba(255, 255, 255, 0.58);
+  --panel-border: rgba(255, 255, 255, 0.82);
+  --accent: #9fd7d8;
+  --shadow: 0 14px 35px rgba(88, 106, 126, 0.18);
+  --fx-glow-opacity: 0.22;
+  --fx-shimmer-opacity: 0.1;
+  --fx-grain-opacity: 0.05;
+  --fx-speed-a: 20s;
+  --fx-speed-b: 13s;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  /* Layered gradients create a dynamic cinematic background. */
+  margin: 0;
+  min-height: 100dvh;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text-main);
+  background: radial-gradient(circle at 12% 15%, var(--bg-a), transparent 44%),
+    radial-gradient(circle at 86% 8%, var(--bg-b), transparent 38%),
+    linear-gradient(145deg, var(--bg-c), #f4f7fb);
+  transition: background 500ms ease;
+  overflow-x: hidden;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Aurora layer adds slow dynamic color movement behind all content. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -22vmax;
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--fx-glow-opacity);
+  background:
+    radial-gradient(circle at 18% 30%, color-mix(in srgb, var(--accent) 74%, white), transparent 42%),
+    radial-gradient(circle at 82% 62%, color-mix(in srgb, var(--bg-b) 72%, white), transparent 46%),
+    conic-gradient(from 0deg at 50% 50%, transparent 0deg, color-mix(in srgb, var(--bg-a) 55%, white) 130deg, transparent 240deg, color-mix(in srgb, var(--accent) 48%, white) 360deg);
+  filter: blur(34px) saturate(1.15);
+  animation: auroraShift var(--fx-speed-a) ease-in-out infinite alternate;
+}
+
+/* Shimmer and subtle grain increase atmosphere without covering UI readability. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    linear-gradient(112deg, transparent 0 42%, rgba(255, 255, 255, var(--fx-shimmer-opacity)) 50%, transparent 58% 100%),
+    repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, var(--fx-grain-opacity)) 0 1px, transparent 1px 3px);
+  background-size: 200% 200%, 180px 180px;
+  mix-blend-mode: soft-light;
+  animation: shimmerSweep var(--fx-speed-b) linear infinite, grainShift 16s linear infinite;
+}
+
+/* Emotion-driven decorative effects layer. */
+.emotion-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fx-confetti,
+.fx-clouds,
+.fx-storm {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+body[data-emotion="happy"] .fx-confetti {
+  opacity: 0.95;
+}
+
+body[data-emotion="sad"] .fx-clouds {
+  opacity: 0.88;
+}
+
+body[data-emotion="angry"] .fx-storm {
+  opacity: 1;
+}
+
+/* Confetti for joy. */
+.fx-confetti .piece {
+  position: absolute;
+  width: 10px;
+  height: 20px;
+  top: -12%;
+  border-radius: 3px;
+  opacity: 0.86;
+  animation: confettiFall 7.5s linear infinite;
+}
+
+.fx-confetti .p1 { left: 6%; background: #ffd166; animation-delay: -1.1s; }
+.fx-confetti .p2 { left: 18%; background: #06d6a0; animation-delay: -3.3s; }
+.fx-confetti .p3 { left: 31%; background: #ef476f; animation-delay: -2.4s; }
+.fx-confetti .p4 { left: 46%; background: #7b61ff; animation-delay: -4.1s; }
+.fx-confetti .p5 { left: 61%; background: #f78c6b; animation-delay: -0.4s; }
+.fx-confetti .p6 { left: 74%; background: #00bbf9; animation-delay: -2.7s; }
+.fx-confetti .p7 { left: 86%; background: #90be6d; animation-delay: -5.5s; }
+.fx-confetti .p8 { left: 93%; background: #ffadad; animation-delay: -1.9s; }
+
+/* Clouds for sadness. */
+.fx-clouds .cloud {
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  filter: blur(1px);
+  box-shadow:
+    26px -12px 0 8px rgba(255, 255, 255, 0.24),
+    52px 0 0 2px rgba(255, 255, 255, 0.22);
+  animation: cloudDrift 28s linear infinite;
+}
+
+.fx-clouds .c1 { width: 95px; height: 36px; top: 18%; left: -20%; animation-delay: -2s; }
+.fx-clouds .c2 { width: 125px; height: 44px; top: 34%; left: -35%; animation-delay: -12s; }
+.fx-clouds .c3 { width: 105px; height: 38px; top: 54%; left: -26%; animation-delay: -19s; }
+.fx-clouds .c4 { width: 88px; height: 32px; top: 68%; left: -40%; animation-delay: -24s; }
+
+/* Storm for anger. */
+.fx-storm .storm-cloud {
+  position: absolute;
+  top: 4%;
+  border-radius: 999px;
+  background: rgba(30, 36, 48, 0.82);
+  box-shadow:
+    36px -16px 0 12px rgba(20, 24, 34, 0.82),
+    72px -4px 0 5px rgba(24, 29, 40, 0.8);
+}
+
+.fx-storm .s1 { width: 150px; height: 56px; left: 8%; }
+.fx-storm .s2 { width: 180px; height: 62px; left: 38%; }
+.fx-storm .s3 { width: 170px; height: 58px; left: 68%; }
+
+.fx-storm .lightning {
+  position: absolute;
+  top: 12%;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 34px solid #fff7cf;
+  filter: drop-shadow(0 0 10px rgba(255, 234, 170, 0.88));
+  opacity: 0;
+  animation: lightningStrike 3.8s steps(1, end) infinite;
+}
+
+.fx-storm .l1 { left: 30%; animation-delay: 0.4s; }
+.fx-storm .l2 { left: 70%; animation-delay: 2s; border-top-width: 42px; }
+
+.bg-orb {
+  /* Floating blurred shapes add depth and motion behind the UI. */
+  position: fixed;
+  width: 34vmax;
+  height: 34vmax;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 14s ease-in-out infinite;
+}
+
+.orb-1 {
+  background: color-mix(in srgb, var(--bg-a) 75%, white);
+  top: -12vmax;
+  left: -8vmax;
+}
+
+.orb-2 {
+  background: color-mix(in srgb, var(--bg-b) 80%, white);
+  right: -10vmax;
+  top: 12vmax;
+  animation-delay: -5s;
+}
+
+.orb-3 {
+  background: color-mix(in srgb, var(--bg-c) 65%, var(--accent));
+  bottom: -14vmax;
+  left: 35%;
+  animation-delay: -9s;
+}
+
+.app-shell {
+  position: relative;
+  z-index: 2;
+  width: min(1080px, 100% - 2rem);
+  margin: 0 auto;
+  padding: 2.4rem 0 2.2rem;
+}
+
+.hero {
+  margin-bottom: 1.4rem;
+}
+
+.eyebrow {
+  margin: 0;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  opacity: 0.82;
+}
+
+h1 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.05;
+  max-width: 14ch;
+}
+
+.subtext {
+  margin: 0.9rem 0 0;
+  max-width: 62ch;
+  line-height: 1.45;
+  opacity: 0.86;
+}
+
+.camera-panel {
+  /* Frosted glass effect for readability over bright animated backgrounds. */
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: clamp(0.9rem, 2vw, 1.4rem);
+}
+
+/* Container holds video and emotion icon together with relative positioning. */
+.video-container {
+  position: relative;
+  width: 100%;
+  max-height: 62vh;
+  border-radius: 14px;
+}
+
+#video,
+#overlay {
+  width: 100%;
+  max-height: 62vh;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  object-fit: cover;
+}
+
+/* Emotion icon displays as an overlay on the right side of the video feed. */
+.emotion-icon {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  left: 8px;
+  top: 8px;
+  object-fit: contain;
+  background: transparent;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: left 220ms ease, top 220ms ease, width 220ms ease, height 220ms ease, opacity 220ms ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#video {
+  /* Mirror camera feed for a familiar selfie-like interaction. */
+  background: rgba(248, 250, 255, 0.75);
+  transform: scaleX(-1);
+}
+
+#overlay {
+  display: none;
+}
+
+.status-grid {
+  margin-top: 0.95rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.status-card {
+  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  border-radius: 12px;
+  padding: 0.7rem 0.75rem;
+}
+
+.status-card-wide {
+  grid-column: 1 / -1;
+}
+
+.status-label {
+  margin: 0;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  opacity: 0.78;
+}
+
+.status-value {
+  margin: 0.22rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.action-btn {
+  margin-top: 0.95rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.78rem 1.2rem;
+  font-family: inherit;
+  font-size: 0.98rem;
+  font-weight: 700;
+  background: linear-gradient(120deg, var(--accent), color-mix(in srgb, var(--accent) 48%, white));
+  color: #1f3242;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.action-btn:active {
+  transform: translateY(1px);
+}
+
+.action-btn:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+body[data-emotion="happy"] {
+  /* Warm, energetic palette for joy. */
+  --bg-a: #ffe066;
+  --bg-b: #ff9f5a;
+  --bg-c: #ff6fa1;
+  --accent: #fff2bf;
+  --fx-glow-opacity: 0.28;
+  --fx-shimmer-opacity: 0.14;
+  --fx-speed-a: 14s;
+}
+
+body[data-emotion="sad"] {
+  /* Brighter cool palette for sadness. */
+  --bg-a: #84c7ff;
+  --bg-b: #4f8fd8;
+  --bg-c: #2f5ca2;
+  --accent: #d8ecff;
+  --fx-glow-opacity: 0.2;
+  --fx-shimmer-opacity: 0.08;
+  --fx-speed-a: 24s;
+}
+
+body[data-emotion="neutral"] {
+  /* Balanced palette for neutral expression. */
+  --bg-a: #d7eadf;
+  --bg-b: #cbe4dc;
+  --bg-c: #bdddd7;
+  --accent: #f4fff9;
+  --fx-glow-opacity: 0.2;
+  --fx-shimmer-opacity: 0.08;
+}
+
+body[data-emotion="angry"] {
+  /* Dark, intense palette for anger. */
+  --bg-a: #ff4b2b;
+  --bg-b: #8f121c;
+  --bg-c: #14070b;
+  --accent: #ff7e6a;
+  --fx-glow-opacity: 0.34;
+  --fx-shimmer-opacity: 0.12;
+  --fx-grain-opacity: 0.08;
+  --fx-speed-a: 11s;
+}
+
+body[data-emotion="surprised"] {
+  /* Bright playful palette for surprise. */
+  --bg-a: #f6dfb5;
+  --bg-b: #d9c7f1;
+  --bg-c: #c3d7f5;
+  --accent: #f3e8ff;
+  --fx-glow-opacity: 0.3;
+  --fx-shimmer-opacity: 0.16;
+  --fx-speed-a: 10s;
+  --fx-speed-b: 9s;
+}
+
+@keyframes auroraShift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1);
+  }
+
+  100% {
+    transform: translate3d(2%, 1%, 0) rotate(8deg) scale(1.08);
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    background-position: 110% 0%, 0 0;
+  }
+
+  100% {
+    background-position: -120% 0%, 0 0;
+  }
+}
+
+@keyframes grainShift {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+
+  25% {
+    background-position: 0 0, 12px -10px;
+  }
+
+  50% {
+    background-position: 0 0, -8px 14px;
+  }
+
+  75% {
+    background-position: 0 0, 14px 7px;
+  }
+
+  100% {
+    background-position: 0 0, 0 0;
+  }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translate3d(0, -14vh, 0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate3d(40px, 112vh, 0) rotate(620deg);
+  }
+}
+
+@keyframes cloudDrift {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(145vw);
+  }
+}
+
+@keyframes lightningStrike {
+  0%,
+  14%,
+  24%,
+  100% {
+    opacity: 0;
+  }
+
+  16%,
+  20%,
+  22% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -14px, 0) scale(1.06);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    width: min(1080px, 100% - 1rem);
+    padding-top: 1.2rem;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-card-wide {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after,
+  .bg-orb,
+  .fx-confetti .piece,
+  .fx-clouds .cloud,
+  .fx-storm .lightning {
+    animation: none;
+  }
+}

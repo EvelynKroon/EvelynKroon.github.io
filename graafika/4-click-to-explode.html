@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click to Explode</title>
+  <style>
+    :root {
+      --bg-1: #0f172a;
+      --bg-2: #1e293b;
+      --ink: #dbeafe;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Chakra Petch", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 85% 15%, rgba(251, 146, 60, 0.16), transparent 50%),
+        radial-gradient(circle at 18% 80%, rgba(59, 130, 246, 0.2), transparent 54%),
+        linear-gradient(140deg, var(--bg-1), var(--bg-2));
+    }
+
+    .hint {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 2;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div class="hint">Click anywhere</div>
+  <canvas id="fx"></canvas>
+
+  <script>
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d");
+
+    const bursts = [];
+    const colors = ["#fb923c", "#38bdf8", "#facc15", "#4ade80", "#f87171"];
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(innerWidth * dpr);
+      canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + "px";
+      canvas.style.height = innerHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function explode(x, y) {
+      const count = 42;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + Math.random() * 0.35;
+        const speed = 1 + Math.random() * 5.5;
+        bursts.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 2 + Math.random() * 7,
+          life: 42 + Math.random() * 34,
+          maxLife: 76,
+          color: colors[(Math.random() * colors.length) | 0]
+        });
+      }
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+      for (let i = bursts.length - 1; i >= 0; i--) {
+        const p = bursts[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        p.vy += 0.03;
+        p.life -= 1;
+
+        const alpha = Math.max(p.life / p.maxLife, 0);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (p.life <= 0) bursts.splice(i, 1);
+      }
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(frame);
+    }
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("click", (e) => explode(e.clientX, e.clientY));
+    window.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      if (t) explode(t.clientX, t.clientY);
+    }, { passive: true });
+
+    resize();
+    frame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magnetic Buttons</title>
+  <style>
+    :root {
+      --bg: #101014;
+      --panel: #191924;
+      --ink: #f5f7ff;
+      --accent: #ff6b35;
+      --accent-2: #27c1a5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(70vw 70vw at 85% 10%, rgba(39, 193, 165, 0.18), transparent 60%),
+        radial-gradient(60vw 60vw at 10% 90%, rgba(255, 107, 53, 0.2), transparent 58%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Sora", "Trebuchet MS", sans-serif;
+      overflow: hidden;
+    }
+
+    .wrap {
+      width: min(920px, 92vw);
+      padding: 36px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      backdrop-filter: blur(8px);
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .magnetic {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      color: #111;
+      background: #fff;
+      box-shadow: 0 14px 24px rgba(0, 0, 0, 0.35);
+      transition: background-color 0.25s ease;
+      will-change: transform;
+      cursor: pointer;
+    }
+
+    .magnetic:nth-child(odd) {
+      background: var(--accent);
+      color: #130901;
+    }
+
+    .magnetic:nth-child(even) {
+      background: var(--accent-2);
+      color: #03130f;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Magnetic Buttons</h1>
+    <div class="row">
+      <button class="magnetic">Design</button>
+      <button class="magnetic">Animate</button>
+      <button class="magnetic">Render</button>
+      <button class="magnetic">Export</button>
+      <button class="magnetic">Replay</button>
+    </div>
+  </main>
+
+  <script>
+    const buttons = [...document.querySelectorAll(".magnetic")];
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    function update() {
+      for (const button of buttons) {
+        const rect = button.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        const distance = Math.hypot(dx, dy);
+
+        const radius = 160;
+        const maxPull = 18;
+
+        let tx = 0;
+        let ty = 0;
+
+        if (distance < radius) {
+          const force = (1 - distance / radius) ** 1.5;
+          tx = dx * force * 0.24;
+          ty = dy * force * 0.24;
+
+          tx = Math.max(-maxPull, Math.min(maxPull, tx));
+          ty = Math.max(-maxPull, Math.min(maxPull, ty));
+        }
+
+        const current = button._offset || { x: 0, y: 0 };
+        current.x += (tx - current.x) * 0.2;
+        current.y += (ty - current.y) * 0.2;
+        button._offset = current;
+
+        button.style.transform = `translate(${current.x}px, ${current.y}px)`;
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    window.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      mouseX = touch.clientX;
+      mouseY = touch.clientY;
+    }, { passive: true });
+
+    update();
+  </script>
+</body>
+</html>

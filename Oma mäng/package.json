@@ -1,0 +1,21 @@
+{
+  "name": "futuristic-driving-adventure",
+  "version": "1.0.0",
+  "description": "3D/2.5D driving adventure with Node.js progress saves",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "threejs",
+    "driving-game",
+    "nodejs"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "three": "^0.183.2"
+  }
+}

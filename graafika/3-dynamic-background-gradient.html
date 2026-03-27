@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Background Gradient</title>
+  <style>
+    :root {
+      --c1: #0b3b59;
+      --c2: #f4a261;
+      --c3: #2a9d8f;
+      --c4: #e9c46a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Outfit", "Verdana", sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      transition: background 130ms linear;
+      overflow: hidden;
+    }
+
+    .panel {
+      width: min(760px, 92vw);
+      border-radius: 22px;
+      padding: 30px;
+      background: rgba(8, 8, 12, 0.36);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.6rem, 4.2vw, 2.5rem);
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.92;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+  <section class="panel">
+    <h1>Dynamic Background Gradient</h1>
+    <p>
+      Move your mouse to corners of the screen. Colors and gradient angle change smoothly
+      based on cursor position.
+    </p>
+  </section>
+
+  <script>
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    function mix(a, b, t) {
+      return Math.round(a + (b - a) * t);
+    }
+
+    function rgb(r, g, b) {
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function palette(nx, ny) {
+      const topLeft = [22, 84, 136];
+      const topRight = [240, 112, 60];
+      const bottomLeft = [22, 160, 133];
+      const bottomRight = [245, 197, 98];
+
+      const top = [
+        mix(topLeft[0], topRight[0], nx),
+        mix(topLeft[1], topRight[1], nx),
+        mix(topLeft[2], topRight[2], nx)
+      ];
+
+      const bottom = [
+        mix(bottomLeft[0], bottomRight[0], nx),
+        mix(bottomLeft[1], bottomRight[1], nx),
+        mix(bottomLeft[2], bottomRight[2], nx)
+      ];
+
+      const final = [
+        mix(top[0], bottom[0], ny),
+        mix(top[1], bottom[1], ny),
+        mix(top[2], bottom[2], ny)
+      ];
+
+      return { top, bottom, final };
+    }
+
+    function updateGradient(clientX, clientY) {
+      const nx = clamp(clientX / window.innerWidth, 0, 1);
+      const ny = clamp(clientY / window.innerHeight, 0, 1);
+      const angle = Math.round(35 + nx * 220 - ny * 70);
+      const colors = palette(nx, ny);
+
+      const c1 = rgb(colors.top[0], colors.top[1], colors.top[2]);
+      const c2 = rgb(colors.final[0], colors.final[1], colors.final[2]);
+      const c3 = rgb(colors.bottom[0], colors.bottom[1], colors.bottom[2]);
+
+      document.body.style.background =
+        `linear-gradient(${angle}deg, ${c1} 0%, ${c2} 52%, ${c3} 100%)`;
+    }
+
+    window.addEventListener("mousemove", (e) => {
+      updateGradient(e.clientX, e.clientY);
+    });
+
+    window.addEventListener("touchmove", (e) => {
+      const t = e.touches[0];
+      if (t) updateGradient(t.clientX, t.clientY);
+    }, { passive: true });
+
+    updateGradient(window.innerWidth * 0.45, window.innerHeight * 0.35);
+  </script>
+</body>
+</html>

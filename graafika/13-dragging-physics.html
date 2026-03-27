@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dragging Physics</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --ink: #f3f4f6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(80vw 60vw at 15% 10%, rgba(96, 165, 250, 0.2), transparent 60%),
+        radial-gradient(80vw 60vw at 85% 90%, rgba(251, 146, 60, 0.16), transparent 60%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Sora", "Segoe UI", sans-serif;
+    }
+
+    .hint {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      z-index: 10;
+      background: rgba(17, 24, 39, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+
+    .item {
+      position: fixed;
+      width: 150px;
+      height: 95px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+      display: grid;
+      place-items: center;
+      user-select: none;
+      cursor: grab;
+      color: #071015;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      touch-action: none;
+    }
+
+    .item.dragging { cursor: grabbing; }
+  </style>
+</head>
+<body>
+  <div class="hint">Drag cards: movement has inertia and slight delay</div>
+
+  <script>
+    const cards = [];
+    const colors = ["#22d3ee", "#fb923c", "#4ade80", "#f472b6", "#fde047"];
+
+    function createCard(i) {
+      const el = document.createElement("div");
+      el.className = "item";
+      el.textContent = "BLOCK " + (i + 1);
+      el.style.background = colors[i % colors.length];
+      document.body.appendChild(el);
+
+      const x = 80 + i * 140;
+      const y = 120 + (i % 2) * 120;
+
+      const state = {
+        el,
+        x,
+        y,
+        tx: x,
+        ty: y,
+        vx: 0,
+        vy: 0,
+        dragging: false,
+        ox: 0,
+        oy: 0
+      };
+
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+
+      el.addEventListener("pointerdown", (e) => {
+        state.dragging = true;
+        state.ox = e.clientX - state.tx;
+        state.oy = e.clientY - state.ty;
+        el.classList.add("dragging");
+        el.setPointerCapture(e.pointerId);
+      });
+
+      el.addEventListener("pointermove", (e) => {
+        if (!state.dragging) return;
+        state.tx = e.clientX - state.ox;
+        state.ty = e.clientY - state.oy;
+      });
+
+      function stopDrag() {
+        state.dragging = false;
+        el.classList.remove("dragging");
+      }
+
+      el.addEventListener("pointerup", stopDrag);
+      el.addEventListener("pointercancel", stopDrag);
+
+      cards.push(state);
+    }
+
+    for (let i = 0; i < 6; i++) createCard(i);
+
+    function tick() {
+      for (const c of cards) {
+        const spring = c.dragging ? 0.16 : 0.08;
+        const damping = c.dragging ? 0.68 : 0.82;
+
+        c.vx += (c.tx - c.x) * spring;
+        c.vy += (c.ty - c.y) * spring;
+        c.vx *= damping;
+        c.vy *= damping;
+
+        c.x += c.vx;
+        c.y += c.vy;
+
+        c.el.style.left = c.x + "px";
+        c.el.style.top = c.y + "px";
+      }
+      requestAnimationFrame(tick);
+    }
+
+    tick();
+  </script>
+</body>
+</html>

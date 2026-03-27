@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scroll Driven Scaling</title>
+  <style>
+    :root {
+      --bg: #f9f6ef;
+      --ink: #19242f;
+      --card: #fff8ea;
+      --accent: #d97706;
+      --accent-2: #0f766e;
+      --progress: 0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "DM Serif Display", Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(217, 119, 6, 0.18), transparent 35%),
+        radial-gradient(circle at 100% 90%, rgba(15, 118, 110, 0.22), transparent 42%),
+        var(--bg);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 8vw, 4.8rem);
+      letter-spacing: 0.02em;
+      transform: scale(calc(1 + var(--progress) * 0.25));
+      transition: transform 120ms linear;
+      transform-origin: center;
+    }
+
+    .subtitle {
+      margin-top: 14px;
+      font-family: "Space Mono", monospace;
+      font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      width: min(1050px, 92vw);
+      margin: 0 auto;
+      padding: 60px 0 160px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      padding: 20px;
+      min-height: 180px;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
+      transform: scale(calc(0.88 + var(--progress) * 0.5));
+      transition: transform 100ms linear;
+      transform-origin: center;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+      color: var(--accent-2);
+    }
+
+    .card p {
+      margin: 0;
+      line-height: 1.5;
+      font-family: "IBM Plex Sans", "Tahoma", sans-serif;
+      font-size: 0.96rem;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.08);
+      z-index: 3;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: calc(var(--progress) * 100%);
+      background: linear-gradient(90deg, var(--accent), #f59e0b, var(--accent-2));
+    }
+  </style>
+</head>
+<body>
+  <div class="progress"><span></span></div>
+
+  <section class="hero">
+    <div>
+      <h1>Scroll-Driven Scaling</h1>
+      <p class="subtitle">Scroll down to amplify layout scale</p>
+    </div>
+  </section>
+
+  <section class="grid">
+    <article class="card"><h2>Layer</h2><p>The whole composition scales with scroll progress.</p></article>
+    <article class="card"><h2>Depth</h2><p>Cards become larger as the page continues downward.</p></article>
+    <article class="card"><h2>Rhythm</h2><p>Movement stays smooth by updating a single CSS variable.</p></article>
+    <article class="card"><h2>Balance</h2><p>Typography and blocks respond together for visual cohesion.</p></article>
+    <article class="card"><h2>Signal</h2><p>The top bar reflects the same progress value in real time.</p></article>
+    <article class="card"><h2>Finish</h2><p>At max scroll, elements reach their final magnification state.</p></article>
+    <article class="card"><h2>Control</h2><p>All scale factors can be tuned in CSS calc formulas.</p></article>
+    <article class="card"><h2>Flow</h2><p>Scroll interaction drives both content and decorative dynamics.</p></article>
+  </section>
+
+  <script>
+    function updateProgress() {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const raw = scrollable > 0 ? window.scrollY / scrollable : 0;
+      const progress = Math.max(0, Math.min(1, raw));
+      document.documentElement.style.setProperty("--progress", progress.toFixed(4));
+    }
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    updateProgress();
+  </script>
+</body>
+</html>

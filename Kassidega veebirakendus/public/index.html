@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cat Cards - Discover Adorable Cats</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='0.9em' font-size='56'%3E%F0%9F%90%B1%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🐱 Meet Our Cats</h1>
+      <p>Discover information about our lovely feline friends</p>
+    </header>
+
+    <main>
+      <section class="filters" aria-label="Cat filters">
+        <input type="search" id="searchInput" class="filter-input" placeholder="Search by name, breed, color..." aria-label="Search cats">
+
+        <select id="breedFilter" class="filter-input" aria-label="Filter by breed">
+          <option value="all">All breeds</option>
+        </select>
+
+        <select id="ageFilter" class="filter-input" aria-label="Filter by age">
+          <option value="all">All ages</option>
+          <option value="kitten">Kitten (0-1)</option>
+          <option value="young">Young (2-3)</option>
+          <option value="adult">Adult (4-6)</option>
+          <option value="senior">Senior (7+)</option>
+        </select>
+
+        <select id="colorFilter" class="filter-input" aria-label="Filter by color">
+          <option value="all">All colors</option>
+        </select>
+
+        <button id="favoritesOnlyToggle" class="reset-btn favorites-toggle" type="button" aria-pressed="false">Show favorites only</button>
+
+        <button id="resetFilters" class="reset-btn" type="button">Reset</button>
+      </section>
+
+      <p id="resultsCount" class="results-count" aria-live="polite"></p>
+
+      <section class="recommendations" aria-label="Personal recommendations">
+        <div class="recommendations-head">
+          <h2>Recommended For You</h2>
+          <p>Based on cats you liked or viewed.</p>
+        </div>
+        <div id="recommendationsContainer" class="recommendations-grid"></div>
+      </section>
+
+      <div class="cats-grid" id="catsContainer">
+        <!-- Cat cards will be loaded here -->
+      </div>
+
+      <section class="happy-endings" aria-label="Happy endings">
+        <div class="happy-endings-head">
+          <h2>Happy Endings 🏡</h2>
+          <p>Cats who already found a loving home.</p>
+        </div>
+        <div class="happy-grid" id="happyEndingsContainer"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Cat Cards Application. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
